@@ -1,0 +1,53 @@
+{
+  "name": "xylocope-website",
+  "version": "1.0.0",
+  "description": "Site web moderne et responsive pour Xylocope",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx live-server --port=3000 --open=/index.html",
+    "build": "npm run minify-css && npm run minify-js",
+    "minify-css": "npx clean-css-cli -o dist/css/styles.min.css css/reset.css css/main.css css/responsive.css",
+    "minify-js": "npx terser js/utils.js js/main.js -o dist/js/scripts.min.js --compress --mangle",
+    "optimize-images": "npx imagemin images/* --out-dir=dist/images",
+    "lint": "npx eslint js/*.js",
+    "format": "npx prettier --write \"**/*.{html,css,js,json,md}\"",
+    "validate-html": "npx html-validate *.html",
+    "test": "npm run lint && npm run validate-html",
+    "dev": "npm run start",
+    "deploy": "npm run build && npm run optimize-images"
+  },
+  "keywords": [
+    "website",
+    "frontend",
+    "responsive",
+    "modern",
+    "xylocope"
+  ],
+  "author": "Xylocope Team",
+  "license": "MIT",
+  "devDependencies": {
+    "clean-css-cli": "^5.6.2",
+    "eslint": "^8.57.0",
+    "html-validate": "^8.7.4",
+    "imagemin": "^8.0.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-svgo": "^10.0.1",
+    "live-server": "^1.2.2",
+    "prettier": "^3.1.1",
+    "terser": "^5.26.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/xylocope-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/xylocope-website/issues"
+  },
+  "homepage": "https://your-username.github.io/xylocope-website"
+}
