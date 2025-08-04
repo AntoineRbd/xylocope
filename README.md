@@ -1,32 +1,30 @@
 # Xylocope - Site Web Drones & FPV
 
-Site web professionnel moderne pour Xylocope, spécialiste en drones et FPV pour prestations vidéo et photographie aérienne.
+Site web professionnel ultra-moderne pour Xylocope, spécialiste en drones et FPV pour prestations vidéo et photographie aérienne.
 
 ## 🚁 À propos
 
 Xylocope propose des services professionnels de :
-- **Photographie aérienne** - Prises de vues haute définition
-- **Vidéographie aérienne** - Réalisations cinématographiques 
-- **FPV Racing** - Démonstrations et initiations
-- **Formation** - Cours de pilotage et certifications
-- **Inspection technique** - Analyses de bâtiments et infrastructures
-- **Événements** - Couverture aérienne d'événements
+- **Photographie aérienne** - Captures 4K/8K haute définition
+- **Vidéographie cinéma** - Réalisations cinématographiques premium
+- **Vol FPV** - Sessions immersives et formations racing
+- **Inspection technique** - Analyses détaillées d'infrastructures
 
 ## 🛠️ Technologies
 
 - **HTML5** - Structure sémantique moderne
-- **CSS3** - Variables CSS, Grid, Flexbox, animations
-- **JavaScript ES6+** - Classes, modules, API modernes
-- **Design responsive** - Mobile-first, compatible tous écrans
-- **Performance optimisée** - Images optimisées, lazy loading
+- **CSS3** - Glassmorphism, variables CSS, Grid/Flexbox, animations avancées
+- **JavaScript ES6+** - Classes, API modernes, intersection observers
+- **Design ultra-moderne** - Mobile-first, glassmorphism, effets visuels
+- **Performance optimisée** - Système vidéo aléatoire, lazy loading
 
-## 🎨 Design
+## 🎨 Design Ultra-Moderne
 
-- **Couleurs** : Violet (#8A5FBF) et Orange (#FF8C42) inspirées du logo
-- **Style** : Minimaliste et professionnel
-- **Typographie** : Police moderne avec excellente lisibilité
-- **Animations** : Transitions fluides et effets visuels
-- **Vidéos** : Intégration de contenus vidéo immersifs
+- **Style** : Glassmorphism avec effets de flou et transparence
+- **Couleurs** : Dégradés violet (#8B5FBF) et orange (#FF8C42)
+- **Animations** : Logo flottant, orbes gradient, transitions fluides
+- **Navigation** : Points de navigation futuristes, menu mobile moderne
+- **Vidéos** : Système aléatoire avec lecture en boucle
 
 ## 📁 Structure du projet
 
@@ -46,14 +44,18 @@ xylocope/
 └── docs/                 # Documentation
 ```
 
-## 🚀 Fonctionnalités
+## 🚀 Fonctionnalités Avancées
 
-- **Navigation fluide** - Scroll smooth entre sections
-- **Menu responsive** - Hamburger menu sur mobile  
-- **Formulaire de contact** - Validation en temps réel
-- **Portfolio vidéo** - Lecture automatique des vidéos
-- **Animations scroll** - Effets d'apparition au scroll
-- **SEO optimisé** - Meta tags et structure sémantique
+- **Logo animé** - Animation flottante avec centrage intelligent
+- **Vidéo aléatoire** - Sélection aléatoire au chargement de page
+- **Images dynamiques** - Système d'images aléatoires pour portfolio
+- **Navigation futuriste** - Points de navigation avec labels hover
+- **Menu mobile premium** - Interface glassmorphism full-screen
+- **Portfolio vidéo** - 100% vidéos avec autoplay et compatibilité .mov/.mp4
+- **Formulaire moderne** - Labels flottants et validation temps réel
+- **Animations scroll** - Intersection Observer pour effets d'apparition
+- **Contact intégré** - Lien Instagram @roubee_fpv inclus
+- **SEO optimisé** - Meta tags et structure sémantique complète
 
 ## 📱 Compatibilité
 
@@ -66,17 +68,32 @@ xylocope/
 
 ```bash
 # Cloner le repository
-git clone [url-du-repo]
+git clone https://github.com/[username]/xylocope.git
+cd xylocope
 
-# Installer les dépendances
-npm install
+# Serveur de développement local
+# Ouvrir index.html dans un navigateur ou utiliser un serveur local
+python -m http.server 3000
+# ou
+npx live-server
 
-# Serveur de développement
-npm start
-
-# Build de production
-npm run build
+# Pour la production
+# Copier tous les fichiers vers votre serveur web
+# Assurer la compatibilité des formats vidéo .mov et .mp4
 ```
+
+## 📹 Gestion des vidéos
+
+- **Formats supportés** : MP4 (recommandé), MOV (QuickTime)
+- **Système aléatoire** : Sélection automatique au refresh
+- **Optimisation** : Autoplay, muted, loop pour une expérience fluide
+- **Responsive** : Adaptation automatique selon la taille d'écran
+
+## 🎯 Contact et réseaux
+
+- **Instagram** : [@roubee_fpv](https://www.instagram.com/roubee_fpv)
+- **Téléphone** : 06 29 84 81 31
+- **Email** : contact@xylocope.fr
 
 ## 📄 Licence
 

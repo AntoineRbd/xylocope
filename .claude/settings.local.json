@@ -1,9 +1,21 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)",
+      "Bash(ren:*)",
+      "Bash(mv:*)",
+      "Bash(dir:*)",
+      "Bash(powershell:*)",
+      "Bash(rm:*)",
+      "Bash(mkdir:*)",
+      "Bash(xcopy:*)",
+      "Bash(copy index.html dist)",
+      "Bash(cp:*)"
     ],
     "deny": []
-  },
-  "$schema": "https://json.schemastore.org/claude-code-settings.json"
+  }
 }
