@@ -120,3 +120,38 @@ temp/
 *.raw
 *.tiff
 *.tif
+
+# Claude Code directory and settings
+.claude/
+.claude/**
+
+# Additional system and development files
+*.lock
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+*.rej
+*~
+*.swp
+*.swo
+
+# Environment and secrets
+*.env
+.env.*
+secrets.*
+config.local.*
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
