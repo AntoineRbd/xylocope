@@ -1,0 +1,17 @@
+# Directories
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+
+# Files
+*.min.js
+*.bundle.js
+
+# Test build artifacts
+tests/fixtures/*.js
+
+# IDE files
+.vscode/
+.idea/

@@ -1,36 +1,34 @@
 /**
  * JavaScript pour Xylocope - Design ultra-moderne
+ * Refactored for better maintainability and performance
  */
 
-// Import utilities
-const { $, $$, ready, debounce, throttle, scrollToElement, observeElements, validators, setLoadingState, showNotification, storage } = window.Utils;
+// Import utilities and configuration
+const { $, $$, ready, debounce, throttle, validators, showNotification, storage } = window.Utils;
+const config = window.XylocopeConfig;
 
-// Application principale
+/**
+ * Main application class for Xylocope website
+ * Manages all website functionality with modular approach
+ */
 class XylocopeModern {
     constructor() {
-        // Toutes les vidéos disponibles dans le dossier images
-        this.allVideos = [
-            'Paradise Found! Dive Into This Stunning Seasi.mp4',
-            'Mesmerizing Waves and Reefs  Dive Into Seasid.mp4',
-            'Vol 16-06_2.mp4',
-            'Have You Ever Seen Waves Dance on Endless Blu.mp4',
-            'Wow! Breathtaking Seaside Paradise Under Blue.mp4',
-            'Retouche photo pointe du grouin.mp4',
-            '0000004_video.mp4',
-            'Plan7.mov'
-        ];
-        this.images = [
-            'Image 2025-07-15 220942_1.1.1.jpg',
-            '0000005_photo.jpg',
-            'Image 2025-07-15 221050_1.1.1.jpg'
-        ];
+        // Initialize configuration-based properties
+        this.allVideos = [...config.VIDEOS];
+        this.images = [...config.IMAGES];
         this.currentVideoIndex = 0;
         this.shuffledVideos = [...this.allVideos].sort(() => Math.random() - 0.5);
         this.isAutoPlaying = true;
-        
+
+        // Cache for DOM elements to improve performance
+        this.domCache = new Map();
+
+        // Initialize cleanup handlers
+        this.cleanupHandlers = [];
+
         this.init();
     }
-    
+
     init() {
         ready(() => {
             this.setupNavigation();
@@ -45,55 +43,57 @@ class XylocopeModern {
             this.loadUserPreferences();
         });
     }
-    
+
     // Navigation futuriste
     setupNavigation() {
         const navDots = $$('.nav-dot');
         const sections = $$('section[id]');
-        
+
         // Gestion des clics sur les points de navigation
         navDots.forEach(dot => {
-            dot.addEventListener('click', (e) => {
+            dot.addEventListener('click', e => {
                 e.preventDefault();
                 const targetId = dot.getAttribute('href').substring(1);
                 const targetSection = $(`#${targetId}`);
-                
+
                 if (targetSection) {
                     this.smoothScrollTo(targetSection);
                     this.updateActiveNavDot(targetId);
                 }
             });
         });
-        
+
         // Mise à jour des points actifs lors du scroll
         const handleScroll = throttle(() => {
             this.updateActiveNavDotOnScroll();
         }, 100);
-        
+
         window.addEventListener('scroll', handleScroll);
         this.updateActiveNavDotOnScroll();
     }
-    
+
     // Menu mobile moderne
     setupMobileMenu() {
         const menuTrigger = $('#mobileMenuTrigger');
         const mobileMenu = $('#mobileMenu');
         const mobileMenuItems = $$('.mobile-menu-item');
-        
-        if (!menuTrigger || !mobileMenu) return;
-        
+
+        if (!menuTrigger || !mobileMenu) {
+            return;
+        }
+
         menuTrigger.addEventListener('click', () => {
             const isOpen = mobileMenu.style.display === 'flex';
             this.toggleMobileMenu(!isOpen);
         });
-        
+
         // Fermer le menu lors du clic sur un lien
         mobileMenuItems.forEach(item => {
-            item.addEventListener('click', (e) => {
+            item.addEventListener('click', e => {
                 e.preventDefault();
                 const targetId = item.getAttribute('href').substring(1);
                 const targetSection = $(`#${targetId}`);
-                
+
                 if (targetSection) {
                     this.toggleMobileMenu(false);
                     setTimeout(() => {
@@ -102,24 +102,24 @@ class XylocopeModern {
                 }
             });
         });
-        
+
         // Fermer le menu en cliquant en dehors
-        mobileMenu.addEventListener('click', (e) => {
+        mobileMenu.addEventListener('click', e => {
             if (e.target === mobileMenu) {
                 this.toggleMobileMenu(false);
             }
         });
     }
-    
+
     toggleMobileMenu(show) {
         const menuTrigger = $('#mobileMenuTrigger');
         const mobileMenu = $('#mobileMenu');
         const spans = menuTrigger.querySelectorAll('span');
-        
+
         if (show) {
             mobileMenu.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
+
             // Animation du hamburger
             spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
             spans[1].style.opacity = '0';
@@ -127,7 +127,7 @@ class XylocopeModern {
         } else {
             mobileMenu.style.display = 'none';
             document.body.style.overflow = '';
-            
+
             // Reset du hamburger
             spans.forEach(span => {
                 span.style.transform = '';
@@ -135,26 +135,28 @@ class XylocopeModern {
             });
         }
     }
-    
+
     // Vidéo aléatoire simple
     setupVideoGallery() {
         const videoElement = $('#heroVideo');
-        
+
         if (!videoElement) {
             return;
         }
-        
+
         // Sélectionner une vidéo aléatoire au chargement de la page
         const randomIndex = Math.floor(Math.random() * this.allVideos.length);
         const randomVideo = this.allVideos[randomIndex];
-        
+
         // Mettre à jour la source de la vidéo
         videoElement.src = `images/${randomVideo}`;
         videoElement.load();
-        
+
         // Auto-play au chargement
-        videoElement.play().catch(e => console.log('Autoplay prevented:', e));
-        
+        videoElement.play().catch(() => {
+            // Autoplay was prevented by browser policy
+        });
+
         // Pause/play au clic
         videoElement.addEventListener('click', () => {
             if (videoElement.paused) {
@@ -164,7 +166,7 @@ class XylocopeModern {
             }
         });
     }
-    
+
     // Système d'images aléatoires
     setupRandomImages() {
         // Images dans la section About
@@ -173,7 +175,7 @@ class XylocopeModern {
             const randomImage = this.images[Math.floor(Math.random() * this.images.length)];
             aboutImage.src = `images/${randomImage}`;
         }
-        
+
         // Images dans le portfolio
         const portfolioImages = $$('.portfolio-item[data-category="photo"] img');
         portfolioImages.forEach(img => {
@@ -183,24 +185,24 @@ class XylocopeModern {
             }
         });
     }
-    
+
     // Filtres du portfolio
     setupPortfolioFilters() {
         const filterBtns = $$('.filter-btn');
         const portfolioItems = $$('.portfolio-item');
-        
+
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const filter = btn.getAttribute('data-filter');
-                
+
                 // Mise à jour des boutons actifs
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 // Filtrage des éléments
                 portfolioItems.forEach(item => {
                     const category = item.getAttribute('data-category');
-                    
+
                     if (filter === 'all' || category === filter) {
                         item.style.display = 'block';
                         item.style.animation = 'fadeInUp 0.6s ease-out';
@@ -211,53 +213,69 @@ class XylocopeModern {
             });
         });
     }
-    
+
     // Formulaire de contact moderne
     setupContactForm() {
         const form = $('#contactForm');
-        if (!form) return;
-        
+        if (!form) {
+            return;
+        }
+
         const inputs = form.querySelectorAll('input, textarea');
         const submitBtn = form.querySelector('.submit-button');
-        
+
         // Animation des labels flottants
         inputs.forEach(input => {
             input.addEventListener('focus', () => {
                 input.parentNode.classList.add('focused');
             });
-            
+
             input.addEventListener('blur', () => {
                 if (!input.value.trim()) {
                     input.parentNode.classList.remove('focused');
                 }
                 this.validateField(input);
             });
-            
+
             input.addEventListener('input', debounce(() => {
                 if (input.classList.contains('error')) {
                     this.validateField(input);
                 }
             }, 300));
         });
-        
+
         // Soumission du formulaire
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', async e => {
             e.preventDefault();
             await this.handleFormSubmit(form, submitBtn);
         });
     }
-    
-    // Curseur personnalisé qui suit la souris
+
+    /**
+     * Setup custom cursor for desktop devices only
+     */
     setupCursorFollow() {
-        if (window.innerWidth < 768) return; // Pas de curseur personnalisé sur mobile
-        
+        if (window.innerWidth < config.UI.MOBILE_BREAKPOINT) {
+            return; // No custom cursor on mobile
+        }
+
+        const cursor = this.createCustomCursor();
+        this.setupCursorMovement(cursor);
+        this.setupCursorInteractions(cursor);
+    }
+
+    /**
+     * Create custom cursor element
+     * @returns {HTMLElement} - The cursor element
+     */
+    createCustomCursor() {
         const cursor = document.createElement('div');
         cursor.className = 'custom-cursor';
         cursor.style.cssText = `
             position: fixed;
             width: 20px;
             height: 20px;
-            background: rgba(139, 95, 191, 0.8);
+            background: ${config.UI.CURSOR_COLORS.DEFAULT};
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
@@ -265,37 +283,67 @@ class XylocopeModern {
             transition: transform 0.1s ease;
         `;
         document.body.appendChild(cursor);
-        
-        document.addEventListener('mousemove', (e) => {
+        return cursor;
+    }
+
+    /**
+     * Setup cursor movement tracking
+     * @param {HTMLElement} cursor - The cursor element
+     */
+    setupCursorMovement(cursor) {
+        const handleMouseMove = e => {
             cursor.style.left = e.clientX - 10 + 'px';
             cursor.style.top = e.clientY - 10 + 'px';
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+
+        // Store cleanup handler
+        this.cleanupHandlers.push(() => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            cursor.remove();
         });
-        
-        // Agrandir le curseur sur les éléments interactifs
-        const interactiveElements = $$('a, button, .nav-dot, .filter-btn, .service-card');
+    }
+
+    /**
+     * Setup cursor interactions with interactive elements
+     * @param {HTMLElement} cursor - The cursor element
+     */
+    setupCursorInteractions(cursor) {
+        const interactiveElements = $$(config.SELECTORS.INTERACTIVE_ELEMENTS);
+
         interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => {
+            const handleMouseEnter = () => {
                 cursor.style.transform = 'scale(2)';
-                cursor.style.background = 'rgba(255, 140, 66, 0.8)';
-            });
-            
-            el.addEventListener('mouseleave', () => {
+                cursor.style.background = config.UI.CURSOR_COLORS.HOVER;
+            };
+
+            const handleMouseLeave = () => {
                 cursor.style.transform = 'scale(1)';
-                cursor.style.background = 'rgba(139, 95, 191, 0.8)';
+                cursor.style.background = config.UI.CURSOR_COLORS.DEFAULT;
+            };
+
+            el.addEventListener('mouseenter', handleMouseEnter);
+            el.addEventListener('mouseleave', handleMouseLeave);
+
+            // Store cleanup handlers
+            this.cleanupHandlers.push(() => {
+                el.removeEventListener('mouseenter', handleMouseEnter);
+                el.removeEventListener('mouseleave', handleMouseLeave);
             });
         });
     }
-    
+
     // Animations au scroll avec Intersection Observer
     setupScrollAnimations() {
         const animatedElements = $$('.service-card, .portfolio-item, .stat, .contact-card, .image-card');
-        
+
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
-        
-        const observer = new IntersectionObserver((entries) => {
+
+        const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = '1';
@@ -304,19 +352,19 @@ class XylocopeModern {
                 }
             });
         }, observerOptions);
-        
+
         animatedElements.forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(30px)';
             observer.observe(el);
         });
     }
-    
+
     // Observer pour les sections visibles
     setupIntersectionObserver() {
         const sections = $$('section[id]');
-        
-        const sectionObserver = new IntersectionObserver((entries) => {
+
+        const sectionObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const sectionId = entry.target.getAttribute('id');
@@ -326,12 +374,12 @@ class XylocopeModern {
         }, {
             threshold: 0.5
         });
-        
+
         sections.forEach(section => {
             sectionObserver.observe(section);
         });
     }
-    
+
     // Mise à jour de la navigation active
     updateActiveNavDot(activeSection) {
         const navDots = $$('.nav-dot');
@@ -343,25 +391,25 @@ class XylocopeModern {
             }
         });
     }
-    
+
     updateActiveNavDotOnScroll() {
         const sections = $$('section[id]');
         let currentSection = '';
-        
+
         sections.forEach(section => {
             const sectionTop = section.offsetTop - 200;
             const sectionHeight = section.offsetHeight;
-            
+
             if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
                 currentSection = section.getAttribute('id');
             }
         });
-        
+
         if (currentSection) {
             this.updateActiveNavDot(currentSection);
         }
     }
-    
+
     // Scroll fluide amélioré
     smoothScrollTo(target) {
         const targetPosition = target.offsetTop - 50;
@@ -369,158 +417,313 @@ class XylocopeModern {
         const distance = targetPosition - startPosition;
         const duration = 1000;
         let start = null;
-        
-        const animation = (currentTime) => {
-            if (start === null) start = currentTime;
+
+        const animation = currentTime => {
+            if (start === null) {
+                start = currentTime;
+            }
             const timeElapsed = currentTime - start;
             const run = this.easeInOutCubic(timeElapsed, startPosition, distance, duration);
             window.scrollTo(0, run);
-            if (timeElapsed < duration) requestAnimationFrame(animation);
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+            }
         };
-        
+
         requestAnimationFrame(animation);
     }
-    
+
     easeInOutCubic(t, b, c, d) {
         t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t + b;
+        if (t < 1) {
+            return c / 2 * t * t * t + b;
+        }
         t -= 2;
         return c / 2 * (t * t * t + 2) + b;
     }
-    
-    // Validation des champs
+
+    /**
+     * Validate form field with configuration-based messages
+     * @param {HTMLElement} field - The field to validate
+     * @returns {boolean} - Whether the field is valid
+     */
     validateField(field) {
         const value = field.value.trim();
         const fieldName = field.getAttribute('name');
         let isValid = true;
         let errorMessage = '';
-        
-        // Supprimer l'état d'erreur existant
+
+        // Clear existing error state
+        this.clearFieldError(field);
+
+        // Required field validation
+        if (field.hasAttribute('required') && !validators.required(value)) {
+            isValid = false;
+            errorMessage = config.VALIDATION.ERROR_MESSAGES.REQUIRED;
+        }
+
+        // Email validation
+        if (fieldName === 'email' && value && !validators.email(value)) {
+            isValid = false;
+            errorMessage = config.VALIDATION.ERROR_MESSAGES.INVALID_EMAIL;
+        }
+
+        // Message length validation
+        if (fieldName === 'message' && value && !validators.minLength(value, config.VALIDATION.MESSAGE_MIN_LENGTH)) {
+            isValid = false;
+            errorMessage = config.VALIDATION.ERROR_MESSAGES.MESSAGE_TOO_SHORT;
+        }
+
+        // Display error if invalid
+        if (!isValid) {
+            this.showFieldError(field, errorMessage);
+        }
+
+        return isValid;
+    }
+
+    /**
+     * Clear error state from field
+     * @param {HTMLElement} field - The field to clear
+     */
+    clearFieldError(field) {
         field.classList.remove('error');
         const existingError = field.parentNode.querySelector('.field-error');
         if (existingError) {
             existingError.remove();
         }
-        
-        // Validation des champs requis
-        if (field.hasAttribute('required') && !validators.required(value)) {
-            isValid = false;
-            errorMessage = 'Ce champ est requis.';
-        }
-        
-        // Validation de l'email
-        if (fieldName === 'email' && value && !validators.email(value)) {
-            isValid = false;
-            errorMessage = 'Veuillez entrer une adresse email valide.';
-        }
-        
-        // Validation de la longueur du message
-        if (fieldName === 'message' && value && !validators.minLength(value, 10)) {
-            isValid = false;
-            errorMessage = 'Le message doit contenir au moins 10 caractères.';
-        }
-        
-        // Afficher l'erreur si invalide
-        if (!isValid) {
-            field.classList.add('error');
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'field-error';
-            errorDiv.textContent = errorMessage;
-            errorDiv.style.cssText = `
-                color: #ff6b6b;
-                font-size: 0.8rem;
-                margin-top: 0.5rem;
-                position: absolute;
-                bottom: -1.5rem;
-                left: 0;
-            `;
-            field.parentNode.style.position = 'relative';
-            field.parentNode.appendChild(errorDiv);
-        }
-        
-        return isValid;
     }
-    
-    // Gestion de la soumission du formulaire
+
+    /**
+     * Show error message for field
+     * @param {HTMLElement} field - The field with error
+     * @param {string} message - Error message to display
+     */
+    showFieldError(field, message) {
+        field.classList.add('error');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error';
+        errorDiv.textContent = message;
+        errorDiv.style.cssText = `
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: -1.5rem;
+            left: 0;
+        `;
+        field.parentNode.style.position = 'relative';
+        field.parentNode.appendChild(errorDiv);
+    }
+
+    /**
+     * Handle form submission with validation and loading states
+     * @param {HTMLFormElement} form - The form to submit
+     * @param {HTMLElement} submitBtn - The submit button
+     */
     async handleFormSubmit(form, submitBtn) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
-        // Validation de tous les champs
+
+        // Validate all fields
+        if (!this.validateAllFields(form)) {
+            showNotification(config.FORM.VALIDATION_ERROR_MESSAGE, 'error');
+            return;
+        }
+
+        // Set loading state
+        const originalText = this.setLoadingState(submitBtn, true);
+
+        try {
+            // Simulate API call (replace with real endpoint)
+            await new Promise(resolve => setTimeout(resolve, config.FORM.SUBMISSION_DELAY));
+
+            // Success handling
+            this.handleSubmissionSuccess(form, data);
+
+        } catch (error) {
+            this.handleSubmissionError();
+        } finally {
+            // Reset loading state
+            this.setLoadingState(submitBtn, false, originalText);
+        }
+    }
+
+    /**
+     * Validate all form fields
+     * @param {HTMLFormElement} form - The form to validate
+     * @returns {boolean} - Whether all fields are valid
+     */
+    validateAllFields(form) {
         const inputs = form.querySelectorAll('input, textarea');
         let isFormValid = true;
-        
+
         inputs.forEach(input => {
             if (!this.validateField(input)) {
                 isFormValid = false;
             }
         });
-        
-        if (!isFormValid) {
-            showNotification('Veuillez corriger les erreurs dans le formulaire.', 'error');
-            return;
-        }
-        
-        // État de chargement
-        const originalText = submitBtn.querySelector('span').textContent;
-        submitBtn.querySelector('span').textContent = 'Envoi...';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.7';
-        
-        try {
-            // Simulation d'envoi (remplacer par vraie API)
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            console.log('Données du formulaire:', data);
-            
-            // Succès
-            showNotification('Votre message a été envoyé avec succès !', 'success');
-            form.reset();
-            
-            // Sauvegarder les données pour la prochaine fois
-            storage.set('lastContactData', {
-                name: data.name,
-                email: data.email,
-                timestamp: Date.now()
-            });
-            
-        } catch (error) {
-            console.error('Erreur lors de l\'envoi:', error);
-            showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
-        } finally {
-            // Reset de l'état
-            submitBtn.querySelector('span').textContent = originalText;
+
+        return isFormValid;
+    }
+
+    /**
+     * Set loading state for submit button
+     * @param {HTMLElement} submitBtn - The submit button
+     * @param {boolean} isLoading - Whether to show loading state
+     * @param {string} originalText - Original button text (for reset)
+     * @returns {string} - Original text if setting loading state
+     */
+    setLoadingState(submitBtn, isLoading, originalText = null) {
+        const span = submitBtn.querySelector('span');
+
+        if (isLoading) {
+            const original = span.textContent;
+            span.textContent = config.FORM.LOADING_TEXT;
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = config.UI.LOADING_OPACITY;
+            return original;
+        } else {
+            span.textContent = originalText;
             submitBtn.disabled = false;
             submitBtn.style.opacity = '1';
         }
     }
-    
-    // Chargement des préférences utilisateur
+
+    /**
+     * Handle successful form submission
+     * @param {HTMLFormElement} form - The submitted form
+     * @param {Object} data - Form data
+     */
+    handleSubmissionSuccess(form, data) {
+        showNotification(config.FORM.SUCCESS_MESSAGE, 'success');
+        form.reset();
+
+        // Save contact data for future use
+        storage.set(config.STORAGE.CONTACT_DATA_KEY, {
+            name: data.name,
+            email: data.email,
+            timestamp: Date.now()
+        });
+    }
+
+    /**
+     * Handle form submission error
+     */
+    handleSubmissionError() {
+        showNotification(config.FORM.ERROR_MESSAGE, 'error');
+    }
+
+    /**
+     * Load and apply user preferences
+     */
     loadUserPreferences() {
-        // Charger les données de contact sauvegardées
-        const savedData = storage.get('lastContactData');
-        if (savedData && Date.now() - savedData.timestamp < 30 * 24 * 60 * 60 * 1000) {
-            const nameField = $('#name');
-            const emailField = $('#email');
-            
-            if (nameField && !nameField.value) nameField.value = savedData.name || '';
-            if (emailField && !emailField.value) emailField.value = savedData.email || '';
+        this.loadSavedContactData();
+        this.setupAccessibilityPreferences();
+        this.setupThemePreferences();
+    }
+
+    /**
+     * Load saved contact data if not expired
+     */
+    loadSavedContactData() {
+        const savedData = storage.get(config.STORAGE.CONTACT_DATA_KEY);
+        if (!savedData || !this.isContactDataValid(savedData)) {
+            return;
         }
-        
-        // Détecter les préférences du système
+
+        const nameField = $('#name');
+        const emailField = $('#email');
+
+        if (nameField && !nameField.value) {
+            nameField.value = savedData.name || '';
+        }
+        if (emailField && !emailField.value) {
+            emailField.value = savedData.email || '';
+        }
+    }
+
+    /**
+     * Check if saved contact data is still valid (not expired)
+     * @param {Object} savedData - The saved contact data
+     * @returns {boolean} - Whether the data is valid
+     */
+    isContactDataValid(savedData) {
+        return Date.now() - savedData.timestamp < config.STORAGE.CONTACT_DATA_EXPIRY;
+    }
+
+    /**
+     * Setup accessibility preferences from system
+     */
+    setupAccessibilityPreferences() {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             document.documentElement.style.setProperty('--transition', 'none');
         }
-        
-        // Adaptation au thème sombre du système
+    }
+
+    /**
+     * Setup theme preferences and listeners
+     */
+    setupThemePreferences() {
         const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        darkModeQuery.addListener(() => {
-            if (darkModeQuery.matches) {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
+
+        const handleThemeChange = () => {
+            document.body.classList.toggle('dark-mode', darkModeQuery.matches);
+        };
+
+        // Apply initial theme
+        handleThemeChange();
+
+        // Listen for changes
+        darkModeQuery.addListener(handleThemeChange);
+
+        // Store cleanup handler
+        this.cleanupHandlers.push(() => {
+            darkModeQuery.removeListener(handleThemeChange);
+        });
+    }
+
+    /**
+     * Cache DOM element for performance
+     * @param {string} selector - CSS selector
+     * @param {string} key - Cache key (optional, defaults to selector)
+     * @returns {HTMLElement|null} - The cached element
+     */
+    getCachedElement(selector, key = null) {
+        const cacheKey = key || selector;
+
+        if (!this.domCache.has(cacheKey)) {
+            const element = $(selector);
+            this.domCache.set(cacheKey, element);
+        }
+
+        return this.domCache.get(cacheKey);
+    }
+
+    /**
+     * Clear DOM cache
+     */
+    clearCache() {
+        this.domCache.clear();
+    }
+
+    /**
+     * Clean up all event handlers and resources
+     * Call this when destroying the instance
+     */
+    destroy() {
+        // Execute all cleanup handlers
+        this.cleanupHandlers.forEach(handler => {
+            try {
+                handler();
+            } catch (error) {
+                // Silently handle cleanup errors
             }
         });
+
+        // Clear arrays and cache
+        this.cleanupHandlers.length = 0;
+        this.clearCache();
     }
 }
 

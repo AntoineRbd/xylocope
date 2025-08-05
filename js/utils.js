@@ -3,11 +3,11 @@
  */
 
 // DOM utilities
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
 
 // Wait for DOM to be ready
-const ready = (callback) => {
+const ready = callback => {
     if (document.readyState !== 'loading') {
         callback();
     } else {
@@ -21,12 +21,16 @@ const debounce = (func, wait, immediate) => {
     return function executedFunction(...args) {
         const later = () => {
             timeout = null;
-            if (!immediate) func(...args);
+            if (!immediate) {
+                func(...args);
+            }
         };
         const callNow = immediate && !timeout;
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
-        if (callNow) func(...args);
+        if (callNow) {
+            func(...args);
+        }
     };
 };
 
@@ -52,7 +56,7 @@ const scrollToElement = (element, offset = 0) => {
 };
 
 // Get element's offset from top
-const getOffset = (element) => {
+const getOffset = element => {
     let offsetTop = 0;
     while (element) {
         offsetTop += element.offsetTop;
@@ -62,7 +66,7 @@ const getOffset = (element) => {
 };
 
 // Check if element is in viewport
-const isInViewport = (element) => {
+const isInViewport = element => {
     const rect = element.getBoundingClientRect();
     return (
         rect.top >= 0 &&
@@ -79,10 +83,10 @@ const observeElements = (elements, callback, options = {}) => {
         rootMargin: '0px',
         threshold: 0.1
     };
-    
+
     const observerOptions = { ...defaultOptions, ...options };
-    
-    const observer = new IntersectionObserver((entries) => {
+
+    const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 callback(entry.target);
@@ -90,32 +94,32 @@ const observeElements = (elements, callback, options = {}) => {
             }
         });
     }, observerOptions);
-    
+
     elements.forEach(element => observer.observe(element));
-    
+
     return observer;
 };
 
 // Form validation utilities
 const validators = {
-    email: (email) => {
+    email: email => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     },
-    
-    phone: (phone) => {
-        const re = /^[\+]?[1-9][\d]{0,15}$/;
+
+    phone: phone => {
+        const re = /^[+]?[1-9][\d]{0,15}$/;
         return re.test(phone.replace(/\s/g, ''));
     },
-    
-    required: (value) => {
+
+    required: value => {
         return value.trim().length > 0;
     },
-    
+
     minLength: (value, min) => {
         return value.trim().length >= min;
     },
-    
+
     maxLength: (value, max) => {
         return value.trim().length <= max;
     }
@@ -138,7 +142,7 @@ const showNotification = (message, type = 'info', duration = 5000) => {
     if (existing) {
         existing.remove();
     }
-    
+
     const notification = document.createElement('div');
     notification.className = `notification notification--${type}`;
     notification.innerHTML = `
@@ -147,7 +151,7 @@ const showNotification = (message, type = 'info', duration = 5000) => {
             <button class="notification__close" aria-label="Fermer">&times;</button>
         </div>
     `;
-    
+
     // Add styles if not already present
     if (!$('#notification-styles')) {
         const style = document.createElement('style');
@@ -175,19 +179,19 @@ const showNotification = (message, type = 'info', duration = 5000) => {
         `;
         document.head.appendChild(style);
     }
-    
+
     document.body.appendChild(notification);
-    
+
     // Show notification
     setTimeout(() => notification.classList.add('show'), 100);
-    
+
     // Handle close button
     const closeBtn = notification.querySelector('.notification__close');
     closeBtn.addEventListener('click', () => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
     });
-    
+
     // Auto remove
     if (duration > 0) {
         setTimeout(() => {
@@ -208,7 +212,7 @@ const storage = {
             console.warn('Could not save to localStorage:', e);
         }
     },
-    
+
     get: (key, defaultValue = null) => {
         try {
             const item = localStorage.getItem(key);
@@ -218,15 +222,15 @@ const storage = {
             return defaultValue;
         }
     },
-    
-    remove: (key) => {
+
+    remove: key => {
         try {
             localStorage.removeItem(key);
         } catch (e) {
             console.warn('Could not remove from localStorage:', e);
         }
     },
-    
+
     clear: () => {
         try {
             localStorage.clear();
@@ -241,51 +245,51 @@ const api = {
     async request(url, options = {}) {
         const defaultOptions = {
             headers: {
-                'Content-Type': 'application/json',
-            },
+                'Content-Type': 'application/json'
+            }
         };
-        
+
         const config = { ...defaultOptions, ...options };
-        
+
         try {
             const response = await fetch(url, config);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 return await response.json();
             }
-            
+
             return await response.text();
         } catch (error) {
             console.error('API request failed:', error);
             throw error;
         }
     },
-    
+
     get(url, options = {}) {
         return this.request(url, { ...options, method: 'GET' });
     },
-    
+
     post(url, data, options = {}) {
         return this.request(url, {
             ...options,
             method: 'POST',
-            body: JSON.stringify(data),
+            body: JSON.stringify(data)
         });
     },
-    
+
     put(url, data, options = {}) {
         return this.request(url, {
             ...options,
             method: 'PUT',
-            body: JSON.stringify(data),
+            body: JSON.stringify(data)
         });
     },
-    
+
     delete(url, options = {}) {
         return this.request(url, { ...options, method: 'DELETE' });
     }

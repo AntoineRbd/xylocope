@@ -1,0 +1,280 @@
+name: 🚀 Deploy to OVH
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # Job de build et test
+  build-and-test:
+    name: 🧪 Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔍 Run linting
+      run: npm run lint
+    
+    - name: ✅ Validate HTML
+      run: npm run validate-html
+    
+    - name: 🧪 Run unit tests
+      run: npm run test:unit
+    
+    - name: 🔨 Build production assets
+      run: npm run build
+    
+    - name: 🖼️ Optimize images
+      run: npm run optimize-images
+    
+    - name: 📋 Create deployment info
+      run: |
+        echo "DEPLOY_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+        echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+        echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+    
+    - name: 📄 Generate deployment manifest
+      run: |
+        cat > deployment-info.json << EOF
+        {
+          "deployTime": "${{ env.DEPLOY_TIME }}",
+          "commitSha": "${{ env.COMMIT_SHA }}",
+          "branchName": "${{ env.BRANCH_NAME }}",
+          "version": "$(git describe --tags --always)",
+          "repository": "${{ github.repository }}",
+          "workflow": "${{ github.workflow }}",
+          "runId": "${{ github.run_id }}"
+        }
+        EOF
+    
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: website-build
+        path: |
+          index.html
+          css/
+          js/
+          images/
+          assets/
+          dist/
+          deployment-info.json
+        retention-days: 30
+
+  # Job de déploiement vers OVH
+  deploy-ovh:
+    name: 🌐 Deploy to OVH
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ github.event.inputs.environment || 'production' }}
+      url: https://xylocope.fr
+    
+    steps:
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: website-build
+        path: ./build
+    
+    - name: 📋 Display deployment info
+      run: |
+        echo "🚀 Déploiement vers OVH"
+        echo "📅 Date: $(date)"
+        echo "🌿 Branche: ${{ github.ref_name }}"
+        echo "📝 Commit: ${{ github.sha }}"
+        echo "👤 Auteur: ${{ github.actor }}"
+        cat ./build/deployment-info.json | jq '.'
+    
+    - name: 🧹 Prepare files for deployment
+      run: |
+        cd build
+        
+        # Créer la structure des dossiers pour le déploiement
+        mkdir -p deploy-ready
+        
+        # Copier les fichiers essentiels
+        cp index.html deploy-ready/
+        cp -r css/ deploy-ready/css/
+        cp -r js/ deploy-ready/js/
+        cp -r images/ deploy-ready/images/
+        cp -r assets/ deploy-ready/assets/
+        
+        # Copier les fichiers optimisés si ils existent
+        if [ -d "dist/" ]; then
+          cp -r dist/ deploy-ready/dist/
+        fi
+        
+        # Ajouter le fichier de déploiement
+        cp deployment-info.json deploy-ready/
+        
+        # Créer un fichier .htaccess pour optimiser les performances
+        cat > deploy-ready/.htaccess << 'EOF'
+        # Xylocope.fr - Configuration Apache
+        
+        # Compression GZIP
+        <IfModule mod_deflate.c>
+          AddOutputFilterByType DEFLATE text/plain
+          AddOutputFilterByType DEFLATE text/html
+          AddOutputFilterByType DEFLATE text/xml
+          AddOutputFilterByType DEFLATE text/css
+          AddOutputFilterByType DEFLATE application/xml
+          AddOutputFilterByType DEFLATE application/xhtml+xml
+          AddOutputFilterByType DEFLATE application/rss+xml
+          AddOutputFilterByType DEFLATE application/javascript
+          AddOutputFilterByType DEFLATE application/x-javascript
+        </IfModule>
+        
+        # Cache headers
+        <IfModule mod_expires.c>
+          ExpiresActive on
+          ExpiresByType text/css "access plus 1 year"
+          ExpiresByType application/javascript "access plus 1 year"
+          ExpiresByType text/javascript "access plus 1 year"
+          ExpiresByType image/png "access plus 1 year"
+          ExpiresByType image/jpg "access plus 1 year"
+          ExpiresByType image/jpeg "access plus 1 year"
+          ExpiresByType image/gif "access plus 1 year"
+          ExpiresByType image/svg+xml "access plus 1 year"
+          ExpiresByType video/mp4 "access plus 1 year"
+          ExpiresByType video/webm "access plus 1 year"
+        </IfModule>
+        
+        # Security headers
+        <IfModule mod_headers.c>
+          Header always set X-Frame-Options "SAMEORIGIN"
+          Header always set X-Content-Type-Options "nosniff"
+          Header always set Referrer-Policy "strict-origin-when-cross-origin"
+        </IfModule>
+        
+        # Force HTTPS
+        RewriteEngine On
+        RewriteCond %{HTTPS} off
+        RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+        
+        # Remove trailing slashes
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteCond %{THE_REQUEST} /+([^?\s]*?)(?:\?[^\s]*?)?\s+HTTP/
+        RewriteRule ^(.+?)/?$ /$1 [R=301,L]
+        
+        EOF
+        
+        # Créer un robots.txt
+        cat > deploy-ready/robots.txt << 'EOF'
+        User-agent: *
+        Allow: /
+        
+        Sitemap: https://xylocope.fr/sitemap.xml
+        EOF
+        
+        echo "📁 Fichiers préparés pour le déploiement:"
+        find deploy-ready -type f | head -20
+    
+    - name: 📤 Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ftp.cluster021.hosting.ovh.net
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./build/deploy-ready/
+        server-dir: ./www/
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.DS_Store
+          **/Thumbs.db
+          **/*.log
+          **/.env*
+          **/deployment-info.json
+        clean: true
+        clean-exclude: |
+          .htaccess
+          robots.txt
+    
+    - name: 🔍 Verify deployment
+      run: |
+        echo "🕐 Attente de 10 secondes pour la propagation..."
+        sleep 10
+        
+        echo "🌐 Vérification du site web..."
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://xylocope.fr)
+        
+        if [ "$HTTP_STATUS" -eq 200 ]; then
+          echo "✅ Site accessible - HTTP $HTTP_STATUS"
+        else
+          echo "❌ Problème d'accès - HTTP $HTTP_STATUS"
+          exit 1
+        fi
+        
+        echo "🔍 Vérification des ressources CSS..."
+        CSS_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://xylocope.fr/css/main.css)
+        
+        if [ "$CSS_STATUS" -eq 200 ]; then
+          echo "✅ CSS accessible - HTTP $CSS_STATUS"
+        else
+          echo "⚠️ CSS non accessible - HTTP $CSS_STATUS"
+        fi
+    
+    - name: 📊 Deployment summary
+      run: |
+        echo "## 🚀 Déploiement terminé avec succès!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Informations de déploiement" >> $GITHUB_STEP_SUMMARY
+        echo "- **Site:** https://xylocope.fr" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branche:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Auteur:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Vérifications effectuées" >> $GITHUB_STEP_SUMMARY
+        echo "- Tests unitaires passés" >> $GITHUB_STEP_SUMMARY
+        echo "- Validation HTML OK" >> $GITHUB_STEP_SUMMARY
+        echo "- Linting réussi" >> $GITHUB_STEP_SUMMARY
+        echo "- Site accessible" >> $GITHUB_STEP_SUMMARY
+
+  # Job de notification (optionnel)
+  notify:
+    name: 📢 Notifications
+    needs: [build-and-test, deploy-ovh]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 📧 Send success notification
+      if: needs.deploy-ovh.result == 'success'
+      run: |
+        echo "🎉 Déploiement réussi pour xylocope.fr"
+        echo "Le site est maintenant en ligne avec les dernières modifications."
+    
+    - name: 🚨 Send failure notification
+      if: needs.deploy-ovh.result == 'failure' || needs.build-and-test.result == 'failure'
+      run: |
+        echo "❌ Échec du déploiement"
+        echo "Vérifiez les logs GitHub Actions pour plus de détails."
