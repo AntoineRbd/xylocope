@@ -4,8 +4,9 @@
  */
 
 // Import utilities and configuration
-const { $, $$, ready, debounce, throttle, validators, showNotification, storage } = window.Utils;
 const config = window.XylocopeConfig;
+
+// Use utilities directly from window.Utils (alwindow.Utils.ready available globally)
 
 /**
  * Main application class for Xylocope website
@@ -30,7 +31,7 @@ class XylocopeModern {
     }
 
     init() {
-        ready(() => {
+        window.Utils.ready(() => {
             this.setupNavigation();
             this.setupMobileMenu();
             this.setupVideoGallery();
@@ -46,15 +47,15 @@ class XylocopeModern {
 
     // Navigation futuriste
     setupNavigation() {
-        const navDots = $$('.nav-dot');
-        const sections = $$('section[id]');
+        const navDots = window.Utils.$window.Utils.$('.nav-dot');
+        const sections = window.Utils.$$('section[id]');
 
         // Gestion des clics sur les points de navigation
         navDots.forEach(dot => {
             dot.addEventListener('click', e => {
                 e.preventDefault();
                 const targetId = dot.getAttribute('href').substring(1);
-                const targetSection = $(`#${targetId}`);
+                const targetSection = window.Utils.$(`#${targetId}`);
 
                 if (targetSection) {
                     this.smoothScrollTo(targetSection);
@@ -64,7 +65,7 @@ class XylocopeModern {
         });
 
         // Mise à jour des points actifs lors du scroll
-        const handleScroll = throttle(() => {
+        const handleScroll = window.Utils.throttle(() => {
             this.updateActiveNavDotOnScroll();
         }, 100);
 
@@ -74,9 +75,9 @@ class XylocopeModern {
 
     // Menu mobile moderne
     setupMobileMenu() {
-        const menuTrigger = $('#mobileMenuTrigger');
-        const mobileMenu = $('#mobileMenu');
-        const mobileMenuItems = $$('.mobile-menu-item');
+        const menuTrigger = window.Utils.$('#mobileMenuTrigger');
+        const mobileMenu = window.Utils.$('#mobileMenu');
+        const mobileMenuItems = window.Utils.$window.Utils.$('.mobile-menu-item');
 
         if (!menuTrigger || !mobileMenu) {
             return;
@@ -92,7 +93,7 @@ class XylocopeModern {
             item.addEventListener('click', e => {
                 e.preventDefault();
                 const targetId = item.getAttribute('href').substring(1);
-                const targetSection = $(`#${targetId}`);
+                const targetSection = window.Utils.$(`#${targetId}`);
 
                 if (targetSection) {
                     this.toggleMobileMenu(false);
@@ -112,8 +113,8 @@ class XylocopeModern {
     }
 
     toggleMobileMenu(show) {
-        const menuTrigger = $('#mobileMenuTrigger');
-        const mobileMenu = $('#mobileMenu');
+        const menuTrigger = window.Utils.$('#mobileMenuTrigger');
+        const mobileMenu = window.Utils.$('#mobileMenu');
         const spans = menuTrigger.querySelectorAll('span');
 
         if (show) {
@@ -138,7 +139,7 @@ class XylocopeModern {
 
     // Vidéo aléatoire simple
     setupVideoGallery() {
-        const videoElement = $('#heroVideo');
+        const videoElement = window.Utils.$('#heroVideo');
 
         if (!videoElement) {
             return;
@@ -170,14 +171,14 @@ class XylocopeModern {
     // Système d'images aléatoires
     setupRandomImages() {
         // Images dans la section About
-        const aboutImage = $('.image-card img');
+        const aboutImage = window.Utils.$('.image-card img');
         if (aboutImage && this.images.length > 0) {
             const randomImage = this.images[Math.floor(Math.random() * this.images.length)];
             aboutImage.src = `images/${randomImage}`;
         }
 
         // Images dans le portfolio
-        const portfolioImages = $$('.portfolio-item[data-category="photo"] img');
+        const portfolioImages = window.Utils.$window.Utils.$('.portfolio-item[data-category="photo"] img');
         portfolioImages.forEach(img => {
             if (this.images.length > 0) {
                 const randomImage = this.images[Math.floor(Math.random() * this.images.length)];
@@ -188,8 +189,8 @@ class XylocopeModern {
 
     // Filtres du portfolio
     setupPortfolioFilters() {
-        const filterBtns = $$('.filter-btn');
-        const portfolioItems = $$('.portfolio-item');
+        const filterBtns = window.Utils.$window.Utils.$('.filter-btn');
+        const portfolioItems = window.Utils.$window.Utils.$('.portfolio-item');
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -216,7 +217,7 @@ class XylocopeModern {
 
     // Formulaire de contact moderne
     setupContactForm() {
-        const form = $('#contactForm');
+        const form = window.Utils.$('#contactForm');
         if (!form) {
             return;
         }
@@ -237,7 +238,7 @@ class XylocopeModern {
                 this.validateField(input);
             });
 
-            input.addEventListener('input', debounce(() => {
+            input.addEventListener('input', window.Utils.debounce(() => {
                 if (input.classList.contains('error')) {
                     this.validateField(input);
                 }
@@ -310,7 +311,7 @@ class XylocopeModern {
      * @param {HTMLElement} cursor - The cursor element
      */
     setupCursorInteractions(cursor) {
-        const interactiveElements = $$(config.SELECTORS.INTERACTIVE_ELEMENTS);
+        const interactiveElements = window.Utils.$$(config.SELECTORS.INTERACTIVE_ELEMENTS);
 
         interactiveElements.forEach(el => {
             const handleMouseEnter = () => {
@@ -336,7 +337,7 @@ class XylocopeModern {
 
     // Animations au scroll avec Intersection Observer
     setupScrollAnimations() {
-        const animatedElements = $$('.service-card, .portfolio-item, .stat, .contact-card, .image-card');
+        const animatedElements = window.Utils.$window.Utils.$('.service-card, .portfolio-item, .stat, .contact-card, .image-card');
 
         const observerOptions = {
             threshold: 0.1,
@@ -362,7 +363,7 @@ class XylocopeModern {
 
     // Observer pour les sections visibles
     setupIntersectionObserver() {
-        const sections = $$('section[id]');
+        const sections = window.Utils.$$('section[id]');
 
         const sectionObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
@@ -382,7 +383,7 @@ class XylocopeModern {
 
     // Mise à jour de la navigation active
     updateActiveNavDot(activeSection) {
-        const navDots = $$('.nav-dot');
+        const navDots = window.Utils.$window.Utils.$('.nav-dot');
         navDots.forEach(dot => {
             dot.classList.remove('active');
             const href = dot.getAttribute('href');
@@ -393,7 +394,7 @@ class XylocopeModern {
     }
 
     updateActiveNavDotOnScroll() {
-        const sections = $$('section[id]');
+        const sections = window.Utils.$$('section[id]');
         let currentSection = '';
 
         sections.forEach(section => {
@@ -457,19 +458,19 @@ class XylocopeModern {
         this.clearFieldError(field);
 
         // Required field validation
-        if (field.hasAttribute('required') && !validators.required(value)) {
+        if (field.hasAttribute('required') && !window.Utils.validators.required(value)) {
             isValid = false;
             errorMessage = config.VALIDATION.ERROR_MESSAGES.REQUIRED;
         }
 
         // Email validation
-        if (fieldName === 'email' && value && !validators.email(value)) {
+        if (fieldName === 'email' && value && !window.Utils.validators.email(value)) {
             isValid = false;
             errorMessage = config.VALIDATION.ERROR_MESSAGES.INVALID_EMAIL;
         }
 
         // Message length validation
-        if (fieldName === 'message' && value && !validators.minLength(value, config.VALIDATION.MESSAGE_MIN_LENGTH)) {
+        if (fieldName === 'message' && value && !window.Utils.validators.minLength(value, config.VALIDATION.MESSAGE_MIN_LENGTH)) {
             isValid = false;
             errorMessage = config.VALIDATION.ERROR_MESSAGES.MESSAGE_TOO_SHORT;
         }
@@ -527,7 +528,7 @@ class XylocopeModern {
 
         // Validate all fields
         if (!this.validateAllFields(form)) {
-            showNotification(config.FORM.VALIDATION_ERROR_MESSAGE, 'error');
+            window.Utils.showNotification(config.FORM.VALIDATION_ERROR_MESSAGE, 'error');
             return;
         }
 
@@ -596,11 +597,11 @@ class XylocopeModern {
      * @param {Object} data - Form data
      */
     handleSubmissionSuccess(form, data) {
-        showNotification(config.FORM.SUCCESS_MESSAGE, 'success');
+        window.Utils.showNotification(config.FORM.SUCCESS_MESSAGE, 'success');
         form.reset();
 
         // Save contact data for future use
-        storage.set(config.STORAGE.CONTACT_DATA_KEY, {
+        window.Utils.storage.set(config.STORAGE.CONTACT_DATA_KEY, {
             name: data.name,
             email: data.email,
             timestamp: Date.now()
@@ -611,7 +612,7 @@ class XylocopeModern {
      * Handle form submission error
      */
     handleSubmissionError() {
-        showNotification(config.FORM.ERROR_MESSAGE, 'error');
+        window.Utils.showNotification(config.FORM.ERROR_MESSAGE, 'error');
     }
 
     /**
@@ -627,13 +628,13 @@ class XylocopeModern {
      * Load saved contact data if not expired
      */
     loadSavedContactData() {
-        const savedData = storage.get(config.STORAGE.CONTACT_DATA_KEY);
+        const savedData = window.Utils.storage.get(config.STORAGE.CONTACT_DATA_KEY);
         if (!savedData || !this.isContactDataValid(savedData)) {
             return;
         }
 
-        const nameField = $('#name');
-        const emailField = $('#email');
+        const nameField = window.Utils.$('#name');
+        const emailField = window.Utils.$('#email');
 
         if (nameField && !nameField.value) {
             nameField.value = savedData.name || '';
@@ -734,8 +735,8 @@ const app = new XylocopeModern();
 window.XylocopeApp = app;
 
 // Styles CSS additionnels injectés via JavaScript
-ready(() => {
-    if (!$('#dynamic-styles')) {
+window.Utils.ready(() => {
+    if (!window.Utils.$('#dynamic-styles')) {
         const style = document.createElement('style');
         style.id = 'dynamic-styles';
         style.textContent = `
