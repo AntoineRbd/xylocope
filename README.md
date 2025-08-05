@@ -20,11 +20,11 @@ Xylocope propose des services professionnels de :
 
 ## 🎨 Design Ultra-Moderne
 
-- **Style** : Glassmorphism avec effets de flou et transparence
-- **Couleurs** : Dégradés violet (#8B5FBF) et orange (#FF8C42)
+- **Style** : Thème clair pastel avec glassmorphism raffiné
+- **Couleurs** : Palette pastel claire avec blancs (#fafbfc) et violets doux (#6B4A94)
 - **Animations** : Logo flottant, orbes gradient, transitions fluides
 - **Navigation** : Points de navigation futuristes, menu mobile moderne
-- **Vidéos** : Système aléatoire avec lecture en boucle
+- **Médias** : Intégration optimisée des vidéos et photos avec bordures subtiles
 
 ## 📁 Structure du projet
 
@@ -46,14 +46,14 @@ xylocope/
 
 ## 🚀 Fonctionnalités Avancées
 
-- **Logo animé** - Animation flottante avec centrage intelligent
-- **Vidéo aléatoire** - Sélection aléatoire au chargement de page
-- **Images dynamiques** - Système d'images aléatoires pour portfolio
-- **Navigation futuriste** - Points de navigation avec labels hover
-- **Menu mobile premium** - Interface glassmorphism full-screen
-- **Portfolio vidéo** - 100% vidéos avec autoplay et compatibilité .mov/.mp4
-- **Formulaire moderne** - Labels flottants et validation temps réel
-- **Animations scroll** - Intersection Observer pour effets d'apparition
+- **Logo animé** - Animation flottante avec centrage intelligent sur fond clair
+- **Vidéo aléatoire** - Sélection aléatoire au chargement de page avec contrôles optimisés
+- **Images dynamiques** - Système d'images aléatoires pour portfolio avec effets pastel
+- **Navigation futuriste** - Points de navigation avec labels hover adaptés au thème clair
+- **Menu mobile premium** - Interface glassmorphism full-screen en tons clairs
+- **Portfolio vidéo** - 100% vidéos avec bordures subtiles et intégration harmonieuse
+- **Formulaire moderne** - Champs blancs avec bordures claires et labels flottants
+- **Animations scroll** - Intersection Observer pour effets d'apparition raffinés
 - **Contact intégré** - Lien Instagram @roubee_fpv inclus
 - **SEO optimisé** - Meta tags et structure sémantique complète
 
