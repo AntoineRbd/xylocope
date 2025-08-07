@@ -125,19 +125,10 @@ jobs:
           cp deployment-info.json deploy-ready/
         fi
         
-        # Créer un fichier .htaccess minimal pour éviter les redirections
+        # Créer un fichier .htaccess COMPLÈTEMENT VIDE pour éliminer toute redirection
         cat > deploy-ready/.htaccess << 'EOF'
-        # Xylocope.fr - Configuration Apache minimaliste
-        
-        # Compression GZIP uniquement
-        <IfModule mod_deflate.c>
-          AddOutputFilterByType DEFLATE text/css
-          AddOutputFilterByType DEFLATE application/javascript
-          AddOutputFilterByType DEFLATE text/javascript
-        </IfModule>
-        
-        # Pas de redirections - OVH gère HTTPS automatiquement
-        
+        # Xylocope.fr - Fichier .htaccess vide pour tester
+        # Aucune règle pour éviter les conflits avec OVH
         EOF
         
         # Créer un robots.txt
