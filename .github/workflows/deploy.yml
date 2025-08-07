@@ -125,11 +125,13 @@ jobs:
           cp deployment-info.json deploy-ready/
         fi
         
-        # Créer un fichier .htaccess COMPLÈTEMENT VIDE pour éliminer toute redirection
-        cat > deploy-ready/.htaccess << 'EOF'
-        # Xylocope.fr - Fichier .htaccess vide pour tester
-        # Aucune règle pour éviter les conflits avec OVH
-        EOF
+        # NE PAS créer de .htaccess - laisser OVH gérer complètement
+        echo "🚫 Aucun .htaccess déployé - OVH gère tout"
+        
+        # Ajouter la page de test
+        if [ -f "index-test.html" ]; then
+          cp index-test.html deploy-ready/
+        fi
         
         # Créer un robots.txt
         cat > deploy-ready/robots.txt << 'EOF'
@@ -168,7 +170,6 @@ jobs:
         clean: true
         clean-exclude: |
           images/
-          robots.txt
     
     - name: 🔍 Verify deployment
       run: |
