@@ -125,8 +125,23 @@ jobs:
           cp deployment-info.json deploy-ready/
         fi
         
-        # NE PAS créer de .htaccess - laisser OVH gérer complètement
-        echo "🚫 Aucun .htaccess déployé - OVH gère tout"
+        # Utiliser le .htaccess optimal généré par les tests
+        if [ -f ".htaccess-optimal" ]; then
+          cp .htaccess-optimal deploy-ready/.htaccess
+          echo "✅ .htaccess optimal déployé (sans redirections infinies)"
+        else
+          echo "⚠️ .htaccess optimal non trouvé - création minimal"
+          cat > deploy-ready/.htaccess << 'EOF'
+# Xylocope.fr - Configuration minimale
+AddType text/css .css
+AddType application/javascript .js
+AddType image/svg+xml .svg
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css application/javascript
+</IfModule>
+EOF
+        fi
         
         # Ajouter la page de test
         if [ -f "index-test.html" ]; then
@@ -147,7 +162,12 @@ jobs:
         # Ajouter un fichier de test avec timestamp
         echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - Déploiement depuis GitHub Actions" > deploy-ready/deployment-test.txt
         
-        echo "📋 Aucun .htaccess - OVH gère les redirections automatiquement"
+        echo "📋 Configuration .htaccess déployée:"
+        if [ -f "deploy-ready/.htaccess" ]; then
+          echo "--- Début .htaccess ---"
+          head -10 deploy-ready/.htaccess
+          echo "--- Fin .htaccess ---"
+        fi
     
     - name: 📤 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4

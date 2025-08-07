@@ -1,0 +1,35 @@
+# Xylocope.fr - Configuration Apache optimale
+# Pas de redirections pour éviter les boucles infinies
+
+# Gestion des erreurs 404 gracieuse
+ErrorDocument 404 /index.html
+
+# Compression pour les performances
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript text/javascript application/json
+</IfModule>
+
+# Cache pour les ressources statiques
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# Headers de sécurité
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# MIME types pour assurer la bonne interprétation
+AddType text/css .css
+AddType application/javascript .js
+AddType image/svg+xml .svg
+
+# Pas de redirection automatique - laisse OVH gérer HTTPS
