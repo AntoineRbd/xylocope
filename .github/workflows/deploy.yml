@@ -18,10 +18,13 @@ env:
   NODE_VERSION: '18'
 
 jobs:
-  # Job de build et test
-  build-and-test:
-    name: 🧪 Build & Test
+  # Job de build, test et déploiement combiné
+  build-and-deploy:
+    name: 🧪 Build, Test & Deploy
     runs-on: ubuntu-latest
+    environment: 
+      name: ${{ github.event.inputs.environment || 'production' }}
+      url: https://xylocope.fr
     
     steps:
     - name: 📥 Checkout code
@@ -73,55 +76,12 @@ jobs:
         }
         EOF
     
-    - name: 📤 Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: website-build
-        path: |
-          index.html
-          css/
-          js/
-          assets/icons/
-          dist/index.html
-          dist/css/
-          dist/js/
-          dist/assets/icons/
-          deployment-info.json
-        retention-days: 7
-
-  # Job de déploiement vers OVH
-  deploy-ovh:
-    name: 🌐 Deploy to OVH
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    environment: 
-      name: ${{ github.event.inputs.environment || 'production' }}
-      url: https://xylocope.fr
-    
-    steps:
-    - name: 📥 Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: website-build
-        path: ./build
-    
-    - name: 📋 Display deployment info
-      run: |
-        echo "🚀 Déploiement vers OVH"
-        echo "📅 Date: $(date)"
-        echo "🌿 Branche: ${{ github.ref_name }}"
-        echo "📝 Commit: ${{ github.sha }}"
-        echo "👤 Auteur: ${{ github.actor }}"
-        cat ./build/deployment-info.json | jq '.'
-    
     - name: 🧹 Prepare files for deployment
       run: |
-        cd build
-        
         # Créer la structure des dossiers pour le déploiement
         mkdir -p deploy-ready
         
-        # Copier les fichiers essentiels depuis les artifacts
+        # Copier les fichiers essentiels directement depuis le workspace
         if [ -f "index.html" ]; then
           cp index.html deploy-ready/
         fi
@@ -134,8 +94,9 @@ jobs:
           cp -r js/ deploy-ready/js/
         fi
         
-        if [ -d "assets/" ]; then
-          cp -r assets/ deploy-ready/assets/
+        if [ -d "assets/icons/" ]; then
+          mkdir -p deploy-ready/assets/
+          cp -r assets/icons/ deploy-ready/assets/icons/
         fi
         
         # Copier les fichiers optimisés depuis dist si disponibles
@@ -232,7 +193,7 @@ jobs:
         server: ftp.cluster021.hosting.ovh.net
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./build/deploy-ready/
+        local-dir: ./deploy-ready/
         server-dir: ./www/
         exclude: |
           **/.git*
@@ -285,23 +246,3 @@ jobs:
         echo "- Validation HTML OK" >> $GITHUB_STEP_SUMMARY
         echo "- Linting réussi" >> $GITHUB_STEP_SUMMARY
         echo "- Site accessible" >> $GITHUB_STEP_SUMMARY
-
-  # Job de notification (optionnel)
-  notify:
-    name: 📢 Notifications
-    needs: [build-and-test, deploy-ovh]
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-    - name: 📧 Send success notification
-      if: needs.deploy-ovh.result == 'success'
-      run: |
-        echo "🎉 Déploiement réussi pour xylocope.fr"
-        echo "Le site est maintenant en ligne avec les dernières modifications."
-    
-    - name: 🚨 Send failure notification
-      if: needs.deploy-ovh.result == 'failure' || needs.build-and-test.result == 'failure'
-      run: |
-        echo "❌ Échec du déploiement"
-        echo "Vérifiez les logs GitHub Actions pour plus de détails."
