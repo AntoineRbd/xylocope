@@ -81,11 +81,13 @@ jobs:
           index.html
           css/
           js/
-          images/
-          assets/
-          dist/
+          assets/icons/
+          dist/index.html
+          dist/css/
+          dist/js/
+          dist/assets/icons/
           deployment-info.json
-        retention-days: 30
+        retention-days: 7
 
   # Job de déploiement vers OVH
   deploy-ovh:
@@ -119,20 +121,48 @@ jobs:
         # Créer la structure des dossiers pour le déploiement
         mkdir -p deploy-ready
         
-        # Copier les fichiers essentiels
-        cp index.html deploy-ready/
-        cp -r css/ deploy-ready/css/
-        cp -r js/ deploy-ready/js/
-        cp -r images/ deploy-ready/images/
-        cp -r assets/ deploy-ready/assets/
+        # Copier les fichiers essentiels depuis les artifacts
+        if [ -f "index.html" ]; then
+          cp index.html deploy-ready/
+        fi
         
-        # Copier les fichiers optimisés si ils existent
-        if [ -d "dist/" ]; then
-          cp -r dist/ deploy-ready/dist/
+        if [ -d "css/" ]; then
+          cp -r css/ deploy-ready/css/
+        fi
+        
+        if [ -d "js/" ]; then
+          cp -r js/ deploy-ready/js/
+        fi
+        
+        if [ -d "assets/" ]; then
+          cp -r assets/ deploy-ready/assets/
+        fi
+        
+        # Copier les fichiers optimisés depuis dist si disponibles
+        if [ -f "dist/index.html" ]; then
+          mkdir -p deploy-ready/dist/
+          cp dist/index.html deploy-ready/dist/
+        fi
+        
+        if [ -d "dist/css/" ]; then
+          mkdir -p deploy-ready/dist/
+          cp -r dist/css/ deploy-ready/dist/css/
+        fi
+        
+        if [ -d "dist/js/" ]; then
+          mkdir -p deploy-ready/dist/
+          cp -r dist/js/ deploy-ready/dist/js/
+        fi
+        
+        if [ -d "dist/assets/" ]; then
+          mkdir -p deploy-ready/dist/
+          cp -r dist/assets/ deploy-ready/dist/assets/
         fi
         
         # Ajouter le fichier de déploiement
-        cp deployment-info.json deploy-ready/
+        if [ -f "deployment-info.json" ]; then
+          cp deployment-info.json deploy-ready/
+        fi
         
         # Créer un fichier .htaccess pour optimiser les performances
         cat > deploy-ready/.htaccess << 'EOF'
@@ -213,10 +243,7 @@ jobs:
           **/*.log
           **/.env*
           **/deployment-info.json
-        clean: true
-        clean-exclude: |
-          .htaccess
-          robots.txt
+        clean: false
     
     - name: 🔍 Verify deployment
       run: |
