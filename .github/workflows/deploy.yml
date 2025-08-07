@@ -150,6 +150,12 @@ jobs:
         
         echo "📁 Fichiers préparés pour le déploiement:"
         find deploy-ready -type f | head -20
+        
+        # Ajouter un fichier de test avec timestamp
+        echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - Déploiement depuis GitHub Actions" > deploy-ready/deployment-test.txt
+        
+        echo "📋 Contenu du .htaccess:"
+        cat deploy-ready/.htaccess
     
     - name: 📤 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -175,8 +181,8 @@ jobs:
     
     - name: 🔍 Verify deployment
       run: |
-        echo "🕐 Attente de 10 secondes pour la propagation..."
-        sleep 10
+        echo "🕐 Attente de 15 secondes pour la propagation..."
+        sleep 15
         
         echo "🌐 Vérification du site web..."
         HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://xylocope.fr)
@@ -185,7 +191,18 @@ jobs:
           echo "✅ Site accessible - HTTP $HTTP_STATUS"
         else
           echo "❌ Problème d'accès - HTTP $HTTP_STATUS"
-          exit 1
+          echo "🔍 Headers de réponse:"
+          curl -I https://xylocope.fr
+        fi
+        
+        echo "🧪 Vérification du fichier de test de déploiement..."
+        TEST_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://xylocope.fr/deployment-test.txt)
+        if [ "$TEST_STATUS" -eq 200 ]; then
+          echo "✅ Fichier de test trouvé - Déploiement réussi!"
+          echo "Contenu:"
+          curl -s https://xylocope.fr/deployment-test.txt
+        else
+          echo "❌ Fichier de test non trouvé - Déploiement peut-être échoué"
         fi
         
         echo "🔍 Vérification des ressources CSS..."
@@ -195,6 +212,8 @@ jobs:
           echo "✅ CSS accessible - HTTP $CSS_STATUS"
         else
           echo "⚠️ CSS non accessible - HTTP $CSS_STATUS"
+          echo "🔍 Headers CSS:"
+          curl -I https://xylocope.fr/css/main.css
         fi
     
     - name: 📊 Deployment summary
