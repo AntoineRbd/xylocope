@@ -131,16 +131,16 @@ jobs:
           echo "✅ .htaccess optimal déployé (sans redirections infinies)"
         else
           echo "⚠️ .htaccess optimal non trouvé - création minimal"
-          cat > deploy-ready/.htaccess << 'EOF'
-# Xylocope.fr - Configuration minimale
-AddType text/css .css
-AddType application/javascript .js
-AddType image/svg+xml .svg
-
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/css application/javascript
-</IfModule>
-EOF
+          cat > deploy-ready/.htaccess << 'HTACCESS_EOF'
+        # Xylocope.fr - Configuration minimale
+        AddType text/css .css
+        AddType application/javascript .js
+        AddType image/svg+xml .svg
+        
+        <IfModule mod_deflate.c>
+            AddOutputFilterByType DEFLATE text/css application/javascript
+        </IfModule>
+        HTACCESS_EOF
         fi
         
         # Ajouter la page de test
