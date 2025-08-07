@@ -125,51 +125,18 @@ jobs:
           cp deployment-info.json deploy-ready/
         fi
         
-        # Créer un fichier .htaccess pour optimiser les performances (sans redirections)
+        # Créer un fichier .htaccess minimal pour éviter les redirections
         cat > deploy-ready/.htaccess << 'EOF'
-        # Xylocope.fr - Configuration Apache
+        # Xylocope.fr - Configuration Apache minimaliste
         
-        # Compression GZIP
+        # Compression GZIP uniquement
         <IfModule mod_deflate.c>
-          AddOutputFilterByType DEFLATE text/plain
-          AddOutputFilterByType DEFLATE text/html
-          AddOutputFilterByType DEFLATE text/xml
           AddOutputFilterByType DEFLATE text/css
-          AddOutputFilterByType DEFLATE application/xml
-          AddOutputFilterByType DEFLATE application/xhtml+xml
-          AddOutputFilterByType DEFLATE application/rss+xml
           AddOutputFilterByType DEFLATE application/javascript
-          AddOutputFilterByType DEFLATE application/x-javascript
+          AddOutputFilterByType DEFLATE text/javascript
         </IfModule>
         
-        # Cache headers
-        <IfModule mod_expires.c>
-          ExpiresActive on
-          ExpiresByType text/css "access plus 1 month"
-          ExpiresByType application/javascript "access plus 1 month"
-          ExpiresByType text/javascript "access plus 1 month"
-          ExpiresByType image/png "access plus 1 month"
-          ExpiresByType image/jpg "access plus 1 month"
-          ExpiresByType image/jpeg "access plus 1 month"
-          ExpiresByType image/gif "access plus 1 month"
-          ExpiresByType image/svg+xml "access plus 1 month"
-          ExpiresByType video/mp4 "access plus 1 month"
-          ExpiresByType video/webm "access plus 1 month"
-          ExpiresByType video/quicktime "access plus 1 month"
-        </IfModule>
-        
-        # Security headers
-        <IfModule mod_headers.c>
-          Header always set X-Frame-Options "SAMEORIGIN"
-          Header always set X-Content-Type-Options "nosniff"
-          Header always set Referrer-Policy "strict-origin-when-cross-origin"
-        </IfModule>
-        
-        # Disable server signature
-        ServerSignature Off
-        
-        # Enable FollowSymLinks
-        Options +FollowSymLinks
+        # Pas de redirections - OVH gère HTTPS automatiquement
         
         EOF
         
@@ -201,7 +168,10 @@ jobs:
           **/*.log
           **/.env*
           **/deployment-info.json
-        clean: false
+        clean: true
+        clean-exclude: |
+          images/
+          robots.txt
     
     - name: 🔍 Verify deployment
       run: |
