@@ -147,8 +147,7 @@ jobs:
         # Ajouter un fichier de test avec timestamp
         echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - Déploiement depuis GitHub Actions" > deploy-ready/deployment-test.txt
         
-        echo "📋 Contenu du .htaccess:"
-        cat deploy-ready/.htaccess
+        echo "📋 Aucun .htaccess - OVH gère les redirections automatiquement"
     
     - name: 📤 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
