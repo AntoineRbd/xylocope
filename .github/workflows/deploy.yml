@@ -125,22 +125,23 @@ jobs:
           cp deployment-info.json deploy-ready/
         fi
         
-        # Utiliser le .htaccess optimal généré par les tests
-        if [ -f ".htaccess-optimal" ]; then
-          cp .htaccess-optimal deploy-ready/.htaccess
-          echo "✅ .htaccess optimal déployé (sans redirections infinies)"
+        # Utiliser le .htaccess simple pour éviter les redirections infinies
+        if [ -f ".htaccess-simple" ]; then
+          cp .htaccess-simple deploy-ready/.htaccess
+          echo "✅ .htaccess simple déployé (sans redirections)"
         else
-          echo "⚠️ .htaccess optimal non trouvé - création minimal"
+          echo "⚠️ Création .htaccess minimal sans redirections"
           cat > deploy-ready/.htaccess << 'HTACCESS_EOF'
-        # Xylocope.fr - Configuration minimale
-        AddType text/css .css
-        AddType application/javascript .js
-        AddType image/svg+xml .svg
-        
-        <IfModule mod_deflate.c>
-            AddOutputFilterByType DEFLATE text/css application/javascript
-        </IfModule>
-        HTACCESS_EOF
+# Xylocope.fr - Configuration minimale SANS redirections
+DirectoryIndex index.html
+AddType text/css .css
+AddType application/javascript .js
+AddType image/svg+xml .svg
+AddType image/png .png
+AddType image/jpeg .jpg
+AddType video/mp4 .mp4
+AddType video/quicktime .mov
+HTACCESS_EOF
         fi
         
         # Ajouter la page de test
