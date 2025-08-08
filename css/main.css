@@ -7,10 +7,10 @@
     --accent: #E67E22;
     --accent-light: #F39C12;
     
-    /* Couleurs système - thème clair pastel */
-    --bg-primary: #fafbfc;
-    --bg-secondary: #f5f7fa;
-    --bg-tertiary: #eef2f7;
+    /* Couleurs système - thème clair avec contraste */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
     --surface: rgba(0, 0, 0, 0.05);
     --surface-hover: rgba(0, 0, 0, 0.1);
     
@@ -56,7 +56,9 @@ html {
 body {
     font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
+    background-color: #ffffff; /* Fallback solide */
     color: var(--text-primary);
+    color: #2c3e50; /* Fallback solide */
     line-height: 1.6;
     overflow-x: hidden;
     position: relative;
@@ -238,7 +240,8 @@ body::before {
     position: relative;
     overflow: hidden;
     text-align: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 50%, #f5f7fa 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%);
+    background-color: #f8f9fa; /* Fallback solide */
 }
 
 .hero-background {
@@ -490,6 +493,7 @@ section {
 /* Section À propos */
 .about-section {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background-color: #f8f9fa; /* Fallback solide */
 }
 
 .about-grid {
@@ -591,7 +595,8 @@ section {
 
 /* Section Services */
 .services-section {
-    background: linear-gradient(135deg, #fefefe 0%, #f5f7fa 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    background-color: #ffffff; /* Fallback solide */
 }
 
 .services-grid {
@@ -706,7 +711,8 @@ section {
 
 /* Section Portfolio */
 .portfolio-section {
-    background: linear-gradient(135deg, #f1f3f4 0%, #e8eaf6 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background-color: #f8f9fa; /* Fallback solide */
 }
 
 .portfolio-filters {
@@ -820,7 +826,8 @@ section {
 
 /* Section Contact */
 .contact-section {
-    background: linear-gradient(135deg, #f9f9f9 0%, #ecf0f1 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background-color: #f8f9fa; /* Fallback solide */
 }
 
 .contact-grid {
@@ -1013,6 +1020,7 @@ section {
 /* Footer moderne */
 .modern-footer {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background-color: #f8f9fa; /* Fallback solide */
     border-top: 1px solid var(--glass-border);
     padding: 3rem 0 2rem;
 }
