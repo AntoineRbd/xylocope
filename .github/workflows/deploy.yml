@@ -99,6 +99,13 @@ jobs:
           cp -r assets/icons/ deploy-ready/assets/icons/
         fi
         
+        if [ -d "images/" ]; then
+          cp -r images/ deploy-ready/images/
+          echo "✅ Images copiées"
+        else
+          echo "⚠️ Dossier images/ non trouvé"
+        fi
+        
         # Copier les fichiers optimisés depuis dist si disponibles
         if [ -f "dist/index.html" ]; then
           mkdir -p deploy-ready/dist/

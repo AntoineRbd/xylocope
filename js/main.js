@@ -47,7 +47,7 @@ class XylocopeModern {
 
     // Navigation futuriste
     setupNavigation() {
-        const navDots = window.Utils.$window.Utils.$('.nav-dot');
+        const navDots = window.Utils.$$('.nav-dot');
         const sections = window.Utils.$$('section[id]');
 
         // Gestion des clics sur les points de navigation
@@ -77,7 +77,7 @@ class XylocopeModern {
     setupMobileMenu() {
         const menuTrigger = window.Utils.$('#mobileMenuTrigger');
         const mobileMenu = window.Utils.$('#mobileMenu');
-        const mobileMenuItems = window.Utils.$window.Utils.$('.mobile-menu-item');
+        const mobileMenuItems = window.Utils.$$('.mobile-menu-item');
 
         if (!menuTrigger || !mobileMenu) {
             return;
@@ -178,7 +178,7 @@ class XylocopeModern {
         }
 
         // Images dans le portfolio
-        const portfolioImages = window.Utils.$window.Utils.$('.portfolio-item[data-category="photo"] img');
+        const portfolioImages = window.Utils.$$('.portfolio-item[data-category="photo"] img');
         portfolioImages.forEach(img => {
             if (this.images.length > 0) {
                 const randomImage = this.images[Math.floor(Math.random() * this.images.length)];
@@ -189,8 +189,8 @@ class XylocopeModern {
 
     // Filtres du portfolio
     setupPortfolioFilters() {
-        const filterBtns = window.Utils.$window.Utils.$('.filter-btn');
-        const portfolioItems = window.Utils.$window.Utils.$('.portfolio-item');
+        const filterBtns = window.Utils.$$('.filter-btn');
+        const portfolioItems = window.Utils.$$('.portfolio-item');
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -337,7 +337,7 @@ class XylocopeModern {
 
     // Animations au scroll avec Intersection Observer
     setupScrollAnimations() {
-        const animatedElements = window.Utils.$window.Utils.$('.service-card, .portfolio-item, .stat, .contact-card, .image-card');
+        const animatedElements = window.Utils.$$('.service-card, .portfolio-item, .stat, .contact-card, .image-card');
 
         const observerOptions = {
             threshold: 0.1,
@@ -383,7 +383,7 @@ class XylocopeModern {
 
     // Mise à jour de la navigation active
     updateActiveNavDot(activeSection) {
-        const navDots = window.Utils.$window.Utils.$('.nav-dot');
+        const navDots = window.Utils.$$('.nav-dot');
         navDots.forEach(dot => {
             dot.classList.remove('active');
             const href = dot.getAttribute('href');
