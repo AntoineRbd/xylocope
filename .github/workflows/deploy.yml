@@ -132,16 +132,16 @@ jobs:
         else
           echo "⚠️ Création .htaccess minimal sans redirections"
           cat > deploy-ready/.htaccess << 'HTACCESS_EOF'
-# Xylocope.fr - Configuration minimale SANS redirections
-DirectoryIndex index.html
-AddType text/css .css
-AddType application/javascript .js
-AddType image/svg+xml .svg
-AddType image/png .png
-AddType image/jpeg .jpg
-AddType video/mp4 .mp4
-AddType video/quicktime .mov
-HTACCESS_EOF
+        # Xylocope.fr - Configuration minimale SANS redirections
+        DirectoryIndex index.html
+        AddType text/css .css
+        AddType application/javascript .js
+        AddType image/svg+xml .svg
+        AddType image/png .png
+        AddType image/jpeg .jpg
+        AddType video/mp4 .mp4
+        AddType video/quicktime .mov
+        HTACCESS_EOF
         fi
         
         # Ajouter la page de test
