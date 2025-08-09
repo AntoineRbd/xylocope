@@ -1,0 +1,34 @@
+# Xylocope.fr - Configuration simple SANS redirections
+DirectoryIndex index.html
+
+# Types MIME essentiels
+AddType text/css .css
+AddType application/javascript .js
+AddType image/svg+xml .svg
+AddType image/png .png
+AddType image/jpeg .jpg
+AddType video/mp4 .mp4
+AddType video/quicktime .mov
+
+# Compression (optionnelle)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/html
+</IfModule>
+
+# Headers de sécurité simples
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+</IfModule>
+
+# Cache pour les ressources statiques
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType video/mp4 "access plus 1 month"
+</IfModule>

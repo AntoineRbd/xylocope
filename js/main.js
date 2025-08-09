@@ -39,7 +39,7 @@ class XylocopeModern {
             this.setupScrollAnimations();
             this.setupPortfolioFilters();
             this.setupContactForm();
-            this.setupCursorFollow();
+            // this.setupCursorFollow(); // Désactivé - curseur personnalisé enlevé
             this.setupIntersectionObserver();
             this.loadUserPreferences();
         });
@@ -48,7 +48,6 @@ class XylocopeModern {
     // Navigation futuriste
     setupNavigation() {
         const navDots = window.Utils.$$('.nav-dot');
-        const sections = window.Utils.$$('section[id]');
 
         // Gestion des clics sur les points de navigation
         navDots.forEach(dot => {
@@ -694,7 +693,7 @@ class XylocopeModern {
         const cacheKey = key || selector;
 
         if (!this.domCache.has(cacheKey)) {
-            const element = $(selector);
+            const element = window.Utils.$(selector);
             this.domCache.set(cacheKey, element);
         }
 
