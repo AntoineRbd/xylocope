@@ -167,14 +167,14 @@ class XylocopeModern {
         });
     }
 
-    // Système d'images aléatoires
+    // Système d'images aléatoires (désactivé - images fixes utilisées)
     setupRandomImages() {
-        // Images dans la section About
-        const aboutImage = window.Utils.$('.image-card img');
-        if (aboutImage && this.images.length > 0) {
-            const randomImage = this.images[Math.floor(Math.random() * this.images.length)];
-            aboutImage.src = `images/${randomImage}`;
-        }
+        // Images dans la section About - désactivé, utilise l'image fixe du HTML
+        // const aboutImage = window.Utils.$('.image-card img');
+        // if (aboutImage && this.images.length > 0) {
+        //     const randomImage = this.images[Math.floor(Math.random() * this.images.length)];
+        //     aboutImage.src = `images/${randomImage}`;
+        // }
 
         // Images dans le portfolio
         const portfolioImages = window.Utils.$$('.portfolio-item[data-category="photo"] img');
