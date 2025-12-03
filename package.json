@@ -54,6 +54,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "live-server": "^1.2.2",
     "prettier": "^3.1.1",
+    "sharp": "^0.34.5",
     "terser": "^5.26.0"
   },
   "browserslist": [

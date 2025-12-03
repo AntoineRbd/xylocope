@@ -34,6 +34,8 @@ class XylocopeModern {
         window.Utils.ready(() => {
             this.setupNavigation();
             this.setupMobileMenu();
+            this.setupHeroCarousel();
+            this.setupGalleryVideos();
             this.setupVideoGallery();
             this.setupRandomImages();
             this.setupScrollAnimations();
@@ -134,6 +136,96 @@ class XylocopeModern {
                 span.style.opacity = '';
             });
         }
+    }
+
+    // Carousel d'images pour la bannière hero
+    setupHeroCarousel() {
+        const heroSection = window.Utils.$('.hero-section');
+
+        if (!heroSection) {
+            return;
+        }
+
+        const images = [
+            'images/Chateau.jpg',
+            'images/GOPR0574 (1).jpg'
+        ];
+
+        let currentImageIndex = 0;
+
+        const changeHeroBackground = () => {
+            // Image suivante
+            const nextIndex = (currentImageIndex + 1) % images.length;
+            const nextImage = images[nextIndex];
+
+            // Préparer l'image suivante dans ::before
+            const beforePseudo = window.getComputedStyle(heroSection, '::before');
+            heroSection.style.setProperty('--next-bg-image', `url('${nextImage}')`);
+
+            // Appliquer l'image au ::before
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = `
+                .hero-section::before {
+                    background-image: linear-gradient(
+                        rgba(0, 0, 0, 0.4),
+                        rgba(0, 0, 0, 0.5)
+                    ), url('${nextImage}');
+                }
+            `;
+            document.head.appendChild(styleSheet);
+
+            // Déclencher la transition
+            heroSection.classList.add('transitioning');
+
+            // Après la transition, mettre à jour l'image principale
+            setTimeout(() => {
+                heroSection.style.backgroundImage = `
+                    linear-gradient(
+                        rgba(0, 0, 0, 0.4),
+                        rgba(0, 0, 0, 0.5)
+                    ),
+                    url('${nextImage}')
+                `;
+
+                heroSection.classList.remove('transitioning');
+                currentImageIndex = nextIndex;
+
+                // Nettoyer le style temporaire
+                document.head.removeChild(styleSheet);
+            }, 1500);
+        };
+
+        // Changer l'image toutes les 8 secondes
+        setInterval(changeHeroBackground, 8000);
+    }
+
+    // Gestion des vidéos dans la galerie
+    setupGalleryVideos() {
+        const galleryVideos = window.Utils.$$('.gallery-video-container video');
+
+        galleryVideos.forEach(video => {
+            const container = video.closest('.gallery-item');
+
+            // Lecture au hover
+            container.addEventListener('mouseenter', () => {
+                video.play().catch(e => console.log('Video play failed:', e));
+            });
+
+            // Pause et remise à zéro quand on quitte
+            container.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0;
+            });
+
+            // Toggle play/pause au clic
+            video.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        });
     }
 
     // Vidéo aléatoire simple

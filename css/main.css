@@ -240,8 +240,31 @@ body::before {
     position: relative;
     overflow: hidden;
     text-align: center;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%);
-    background-color: #f8f9fa; /* Fallback solide */
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.4),
+            rgba(0, 0, 0, 0.5)
+        ),
+        url('../images/Chateau.jpg') center/cover no-repeat;
+    background-attachment: fixed;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: center/cover no-repeat;
+    background-attachment: fixed;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    z-index: 0;
+}
+
+.hero-section.transitioning::before {
+    opacity: 1;
 }
 
 .hero-background {
@@ -295,7 +318,6 @@ body::before {
 
 .hero-content {
     z-index: 2;
-    margin-bottom: 4rem;
 }
 
 .logo-container {
@@ -329,65 +351,114 @@ body::before {
     font-size: 2.5rem;
     font-weight: 200;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ffffff;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     letter-spacing: 2px;
     text-transform: uppercase;
 }
 
 .hero-description {
     font-size: 1.2rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     font-weight: 300;
     letter-spacing: 1px;
 }
 
-/* Image hero moderne */
-.hero-image-showcase {
-    width: 100%;
-    max-width: 800px;
-    z-index: 2;
-    padding: 1rem;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.3) 0%, 
-        rgba(245, 247, 250, 0.2) 100%);
-    border-radius: calc(var(--border-radius-lg) + 8px);
-    border: 1px solid rgba(107, 74, 148, 0.05);
+/* Hero background image is set directly in .hero-section */
+
+/* Section Galerie */
+.gallery-section {
+    padding: var(--section-padding);
+    background: var(--bg-secondary);
 }
 
-.hero-image-container {
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.gallery-item {
     position: relative;
-    border-radius: var(--border-radius-lg);
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(107, 74, 148, 0.08);
-    box-shadow: 
-        0 8px 32px rgba(107, 74, 148, 0.06),
-        0 4px 16px rgba(0, 0, 0, 0.04);
+    border-radius: var(--border-radius);
+    background: white;
+    box-shadow: var(--shadow-sm);
     transition: var(--transition);
 }
 
-.hero-image-container:hover {
-    transform: translateY(-8px);
-    border-color: rgba(107, 74, 148, 0.15);
-    box-shadow: 
-        0 20px 60px rgba(107, 74, 148, 0.12),
-        0 8px 30px rgba(0, 0, 0, 0.08);
+.gallery-item:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
 }
 
-.hero-image {
+.gallery-image-container {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+}
+
+.gallery-image-container img,
+.gallery-image-container video {
     width: 100%;
-    height: 450px;
+    height: 100%;
     object-fit: cover;
-    display: block;
     transition: var(--transition);
 }
 
-.hero-image-container:hover .hero-image {
-    transform: scale(1.02);
+.gallery-item:hover .gallery-image-container img,
+.gallery-item:hover .gallery-image-container video {
+    transform: scale(1.1);
+}
+
+.gallery-video-container video {
+    cursor: pointer;
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+    );
+    padding: 2rem 1.5rem 1.5rem;
+    transform: translateY(100%);
+    transition: var(--transition);
+}
+
+.gallery-item:hover .gallery-overlay {
+    transform: translateY(0);
+}
+
+.gallery-label {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 1024px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 .video-controls-overlay {
