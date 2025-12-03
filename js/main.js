@@ -147,8 +147,8 @@ class XylocopeModern {
         }
 
         const images = [
-            'images/Chateau.jpg',
-            'images/GOPR0574 (1).jpg'
+            '/images/Chateau.jpg',
+            '/images/GOPR0574 (1).jpg'
         ];
 
         let currentImageIndex = 0;
