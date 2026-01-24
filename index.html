@@ -29,6 +29,7 @@
                 <a href="#hero" class="nav-dot active" data-label="Accueil"></a>
                 <a href="#about" class="nav-dot" data-label="À propos"></a>
                 <a href="#gallery" class="nav-dot" data-label="Galerie"></a>
+                <a href="#faq" class="nav-dot" data-label="FAQ"></a>
                 <a href="#contact" class="nav-dot" data-label="Contact"></a>
             </div>
         </div>
@@ -46,6 +47,7 @@
             <a href="#hero" class="mobile-menu-item">Accueil</a>
             <a href="#about" class="mobile-menu-item">À propos</a>
             <a href="#gallery" class="mobile-menu-item">Galerie</a>
+            <a href="#faq" class="mobile-menu-item">FAQ</a>
             <a href="#contact" class="mobile-menu-item">Contact</a>
         </div>
     </div>
@@ -136,12 +138,86 @@
 
                     <div class="gallery-item">
                         <div class="gallery-image-container gallery-video-container">
-                            <video muted loop playsinline loading="lazy">
+                            <video autoplay muted loop playsinline loading="lazy">
                                 <source src="images/Retouche photo pointe du grouin.mp4" type="video/mp4">
                             </video>
                             <div class="gallery-overlay">
                                 <span class="gallery-label">Pointe du Grouin</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section FAQ -->
+        <section id="faq" class="faq-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <div class="section-badge">FAQ</div>
+                    <h2 class="section-title">Questions fréquentes</h2>
+                    <p class="section-text">Tout ce que vous devez savoir sur le FPV et mes drones</p>
+                </div>
+
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Qu'est-ce que le FPV ?</h3>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>
+                                Le FPV (First Person View) est une technique de pilotage qui permet de voir en temps réel
+                                ce que voit le drone grâce à une caméra embarquée. Le pilote porte des lunettes spéciales
+                                qui affichent la vidéo transmise par le drone, créant une immersion totale et permettant
+                                des manœuvres spectaculaires impossibles avec un drone classique.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Avec quels drones je vole ?</h3>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>
+                                J'utilise actuellement trois drones pour différents types de prises de vue :
+                            </p>
+                            <ul>
+                                <li><strong>Drone FPV 5 pouces :</strong> Rapide et agile, idéal pour les plans dynamiques,
+                                les poursuites et les passages serrés. Parfait pour les vidéos d'action.</li>
+                                <li><strong>Drone FPV 7 pouces :</strong> Plus stable et autonome, excellent pour les plans
+                                fluides longue distance et les cinématiques aériennes.</li>
+                                <li><strong>DJI Mini 4 Pro :</strong> Drone classique compact et polyvalent, parfait pour
+                                les plans stables, les panoramas et la photographie aérienne de haute qualité.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Quelle est la différence entre les plans FPV et les plans de drones classiques ?</h3>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>
+                                Les différences sont significatives et chaque type a ses avantages :
+                            </p>
+                            <ul>
+                                <li><strong>Drones FPV :</strong> Offrent des mouvements fluides et organiques impossibles
+                                avec un drone classique. Capables de vols à haute vitesse, de passages en intérieur,
+                                de proximité avec les sujets et de manœuvres acrobatiques. Idéaux pour raconter une
+                                histoire avec dynamisme.</li>
+                                <li><strong>Drones classiques (DJI Mini 4 Pro) :</strong> Excellents pour les plans stables,
+                                les panoramas larges, les révélations progressives et la photographie aérienne.
+                                Équipés de caméras haute résolution avec stabilisation gimbal pour une qualité d'image
+                                optimale. Parfaits pour l'immobilier, les paysages et les prises de vue techniques.</li>
+                            </ul>
+                            <p>
+                                En combinant les deux approches, je peux offrir une palette complète de perspectives
+                                aériennes pour tous types de projets.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -227,11 +303,21 @@
                     <a href="#hero">Accueil</a>
                     <a href="#about">À propos</a>
                     <a href="#gallery">Galerie</a>
+                    <a href="#faq">FAQ</a>
                     <a href="#contact">Contact</a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Lightbox pour agrandir les images -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <span class="lightbox-close" id="lightboxClose">&times;</span>
+            <img src="" alt="Image agrandie" id="lightboxImage">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script src="js/config.js"></script>

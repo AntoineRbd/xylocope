@@ -41,6 +41,8 @@ class XylocopeModern {
             this.setupScrollAnimations();
             this.setupPortfolioFilters();
             this.setupContactForm();
+            this.setupLightbox();
+            this.setupFAQ();
             // this.setupCursorFollow(); // Désactivé - curseur personnalisé enlevé
             this.setupIntersectionObserver();
             this.loadUserPreferences();
@@ -225,6 +227,89 @@ class XylocopeModern {
                     video.pause();
                 }
             });
+        });
+    }
+
+    // Configuration de la FAQ accordion
+    setupFAQ() {
+        const faqItems = window.Utils.$$('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+
+            question.addEventListener('click', () => {
+                // Fermer les autres items si on veut un seul ouvert à la fois
+                // Commenter ces lignes si on veut permettre plusieurs items ouverts
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+
+                // Toggle l'item actuel
+                item.classList.toggle('active');
+            });
+        });
+    }
+
+    // Configuration de la lightbox pour agrandir les images
+    setupLightbox() {
+        const lightbox = window.Utils.$('#lightbox');
+        const lightboxImg = window.Utils.$('#lightboxImage');
+        const lightboxCaption = window.Utils.$('#lightboxCaption');
+        const lightboxClose = window.Utils.$('#lightboxClose');
+
+        if (!lightbox || !lightboxImg || !lightboxCaption || !lightboxClose) {
+            return;
+        }
+
+        // Sélectionner toutes les images cliquables (galerie + about section)
+        const clickableImages = window.Utils.$$('.gallery-image-container img, .image-card img');
+
+        // Ouvrir la lightbox au clic sur une image
+        clickableImages.forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const imageSrc = img.getAttribute('src');
+                const imageAlt = img.getAttribute('alt') || '';
+
+                lightboxImg.src = imageSrc;
+                lightboxCaption.textContent = imageAlt;
+
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        // Fermer la lightbox
+        const closeLightbox = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                lightboxImg.src = '';
+                lightboxCaption.textContent = '';
+            }, 300);
+        };
+
+        // Fermer au clic sur le fond
+        lightbox.addEventListener('click', closeLightbox);
+
+        // Fermer au clic sur le bouton de fermeture
+        lightboxClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeLightbox();
+        });
+
+        // Empêcher la fermeture au clic sur l'image
+        lightboxImg.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Fermer avec la touche Echap
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
         });
     }
 
@@ -428,7 +513,7 @@ class XylocopeModern {
 
     // Animations au scroll avec Intersection Observer
     setupScrollAnimations() {
-        const animatedElements = window.Utils.$$('.service-card, .portfolio-item, .stat, .contact-card, .image-card');
+        const animatedElements = window.Utils.$$('.service-card, .portfolio-item, .stat, .contact-card, .image-card, .faq-item');
 
         const observerOptions = {
             threshold: 0.1,
