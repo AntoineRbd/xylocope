@@ -566,6 +566,67 @@ section {
     margin-bottom: 5rem;
 }
 
+/* Section Pourquoi Xylocope */
+.xylocope-story-section {
+    background: linear-gradient(135deg, rgba(107, 74, 148, 0.05) 0%, rgba(230, 126, 34, 0.03) 100%);
+    padding: 4rem 0;
+}
+
+.story-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.story-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+}
+
+.story-icon svg {
+    width: 30px;
+    height: 30px;
+    color: white;
+}
+
+.story-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    letter-spacing: -0.5px;
+}
+
+.story-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.story-text:last-child {
+    margin-bottom: 0;
+}
+
+.story-text strong {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.story-text em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 500;
+}
+
 /* Section À propos */
 .about-section {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -952,7 +1013,7 @@ section {
     transition: transform 0.3s ease;
     width: 30px;
     height: 30px;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
@@ -1292,7 +1353,6 @@ a:hover, button:hover, .clickable:hover {
 
 /* Lightbox pour agrandir les images */
 .lightbox {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -1303,14 +1363,16 @@ a:hover, button:hover, .clickable:hover {
     backdrop-filter: blur(10px);
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.lightbox.active {
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.lightbox.active {
     opacity: 1;
+    visibility: visible;
 }
 
 .lightbox-content {

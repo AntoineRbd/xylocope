@@ -208,18 +208,41 @@ class XylocopeModern {
         galleryVideos.forEach(video => {
             const container = video.closest('.gallery-item');
 
-            // Lecture au hover
-            container.addEventListener('mouseenter', () => {
-                video.play().catch(e => console.log('Video play failed:', e));
-            });
+            // Pour les vidéos avec autoplay (Pointe du Grouin)
+            if (video.classList.contains('gallery-video-auto')) {
+                // Forcer le chargement et la lecture
+                video.load();
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
+                        console.log('Autoplay prevented, will play on interaction:', e);
+                        // Si autoplay échoue, jouer au premier scroll/interaction
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    video.play().catch(err => console.log('Video play failed:', err));
+                                    observer.unobserve(video);
+                                }
+                            });
+                        }, { threshold: 0.5 });
+                        observer.observe(video);
+                    });
+                }
+            } else {
+                // Pour les autres vidéos, lecture au hover uniquement
+                // Lecture au hover
+                container.addEventListener('mouseenter', () => {
+                    video.play().catch(e => console.log('Video play failed:', e));
+                });
 
-            // Pause et remise à zéro quand on quitte
-            container.addEventListener('mouseleave', () => {
-                video.pause();
-                video.currentTime = 0;
-            });
+                // Pause et remise à zéro quand on quitte
+                container.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+            }
 
-            // Toggle play/pause au clic
+            // Toggle play/pause au clic pour toutes les vidéos
             video.addEventListener('click', () => {
                 if (video.paused) {
                     video.play();
@@ -513,7 +536,7 @@ class XylocopeModern {
 
     // Animations au scroll avec Intersection Observer
     setupScrollAnimations() {
-        const animatedElements = window.Utils.$$('.service-card, .portfolio-item, .stat, .contact-card, .image-card, .faq-item');
+        const animatedElements = window.Utils.$$('.service-card, .portfolio-item, .stat, .contact-card, .image-card, .faq-item, .story-content');
 
         const observerOptions = {
             threshold: 0.1,
