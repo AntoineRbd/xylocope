@@ -277,32 +277,25 @@ class XylocopeModern {
 
     // Configuration de la lightbox pour agrandir les images
     setupLightbox() {
-        const lightbox = window.Utils.$('#lightbox');
-        const lightboxImg = window.Utils.$('#lightboxImage');
-        const lightboxCaption = window.Utils.$('#lightboxCaption');
-        const lightboxClose = window.Utils.$('#lightboxClose');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImage');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const lightboxClose = document.getElementById('lightboxClose');
 
         if (!lightbox || !lightboxImg || !lightboxCaption || !lightboxClose) {
+            console.log('Lightbox elements not found');
             return;
         }
 
-        // Sélectionner toutes les images cliquables (galerie + about section)
-        const clickableImages = window.Utils.$$('.gallery-image-container img, .image-card img');
+        console.log('Lightbox initialized');
 
-        // Ouvrir la lightbox au clic sur une image
-        clickableImages.forEach(img => {
-            img.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const imageSrc = img.getAttribute('src');
-                const imageAlt = img.getAttribute('alt') || '';
-
-                lightboxImg.src = imageSrc;
-                lightboxCaption.textContent = imageAlt;
-
-                lightbox.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        });
+        // Fonction pour ouvrir la lightbox
+        const openLightbox = (imageSrc, imageAlt) => {
+            lightboxImg.src = imageSrc;
+            lightboxCaption.textContent = imageAlt;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
 
         // Fermer la lightbox
         const closeLightbox = () => {
@@ -314,8 +307,30 @@ class XylocopeModern {
             }, 300);
         };
 
+        // Utiliser la délégation d'événements pour capturer tous les clics sur les images
+        document.addEventListener('click', (e) => {
+            // Vérifier si l'élément cliqué est une image dans la galerie ou la section about
+            const target = e.target;
+
+            if (target.tagName === 'IMG' &&
+                (target.closest('.gallery-image-container') || target.closest('.image-card'))) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const imageSrc = target.getAttribute('src');
+                const imageAlt = target.getAttribute('alt') || '';
+
+                console.log('Image clicked:', imageSrc);
+                openLightbox(imageSrc, imageAlt);
+            }
+        });
+
         // Fermer au clic sur le fond
-        lightbox.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
 
         // Fermer au clic sur le bouton de fermeture
         lightboxClose.addEventListener('click', (e) => {
@@ -323,10 +338,13 @@ class XylocopeModern {
             closeLightbox();
         });
 
-        // Empêcher la fermeture au clic sur l'image
-        lightboxImg.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
+        // Empêcher la fermeture au clic sur le contenu
+        const lightboxContent = lightbox.querySelector('.lightbox-content');
+        if (lightboxContent) {
+            lightboxContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
 
         // Fermer avec la touche Echap
         document.addEventListener('keydown', (e) => {
